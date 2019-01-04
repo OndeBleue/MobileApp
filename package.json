@@ -1,0 +1,17 @@
+{
+  "name": "OndeBleueMobileApp",
+  "version": "0.0.1",
+  "description": "PWA for smartphones to help the OndeBleue propagation",
+  "main": "server-dev.js",
+  "repository": "git@github.com:OndeBleue/MobileApp.git",
+  "author": "L'ondeBleue <contact@onde-bleue.fr>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "connect": "^3.6.6",
+    "serve-static": "^1.13.2"
+  },
+  "scripts": {
+    "start": "node server-dev.js"
+  }
+}
