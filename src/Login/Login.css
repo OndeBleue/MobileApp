@@ -6,11 +6,19 @@
 .login img {
   width: 175px;
   margin: auto;
+  margin-bottom: 1em;
   display: block;
+}
+
+.login h3 {
+	text-align: center;
+	margin-bottom: 2em;
 }
 
 .login-form {
 	margin: auto;
+	width: 295px;
+	margin-bottom: 2em;
 }
 
 .login-form label {
@@ -18,9 +26,18 @@
   margin-bottom: 1em;
 }
 
-.login-form label {
-	width: 300px;
-    height: 27px;
+.login-form input {
+	width: 220px;
     border-radius: 4px;
-    padding: 4px;
+    padding: 0.8em;
+	border: 1px solid gray;
+}
+
+.login-form button {
+	margin-left: 10px;
+	padding: 0.8em;
+	border-radius: 4px;
+	border: 0;
+	background-color: dodgerBlue;
+	color: white;
 }

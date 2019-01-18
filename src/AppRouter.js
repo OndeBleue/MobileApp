@@ -8,7 +8,7 @@ import Page404 from './Page404/Page404.js';
 
 const AppRouter = () => (
   <Router>
-    <div>
+    <div className="App">
       <nav>
         <ul>
           <li>
