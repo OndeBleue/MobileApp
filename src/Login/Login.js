@@ -6,6 +6,9 @@ class Login extends Component {
     return(
       <div className="login">
         <h1> Connexion </h1>
+		<form>
+			<input type="text" />
+		</form>
       </div>
     );
   }
