@@ -2,3 +2,25 @@
   margin: 1rem;
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.login img {
+  width: 175px;
+  margin: auto;
+  display: block;
+}
+
+.login-form {
+	margin: auto;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 1em;
+}
+
+.login-form label {
+	width: 300px;
+    height: 27px;
+    border-radius: 4px;
+    padding: 4px;
+}
