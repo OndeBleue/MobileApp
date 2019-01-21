@@ -1,10 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 
-import Login from './Login/Login.js';
-import Map from './Map/Map.js';
-import Settings from './Settings/Settings.js';
-import Page404 from './Page404/Page404.js';
+import Login from './Login/Login.jsx';
+import Map from './Map/Map.jsx';
+import Settings from './Settings/Settings.jsx';
+import Page404 from './Page404/Page404.jsx';
 import './AppRouter.css';
 
 const AppRouter = () => (
