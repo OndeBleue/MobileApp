@@ -5,6 +5,7 @@ import Login from './Login/Login.js';
 import Map from './Map/Map.js';
 import Settings from './Settings/Settings.js';
 import Page404 from './Page404/Page404.js';
+import './AppRouter.css';
 
 const AppRouter = () => (
   <Router>
