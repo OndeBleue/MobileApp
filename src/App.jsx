@@ -12,7 +12,8 @@ const options = {
   position: 'bottom center',
   timeout: 5000,
   offset: '30px',
-  transition: 'scale'
+  transition: 'scale',
+  zIndex: 400
 }
 
 const App = () => (

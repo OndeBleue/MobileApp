@@ -1,12 +1,15 @@
+const idKey = "onde-bleue-app:user-identifier";
+const tokenKey = "onde-bleue-app:user-token";
+
 export function storeUser(user) {
-  localStorage.setItem('identifier', user.identifier);
-  localStorage.setItem('token', user.token);
+  localStorage.setItem(idKey, user.identifier);
+  localStorage.setItem(tokenKey, user.token);
 }
 
 export function restoreIdentifier() {
-  return localStorage.getItem('identifier');
+  return localStorage.getItem(idKey);
 }
 
 export function restoreToken() {
-  return localStorage.getItem('token');
+  return localStorage.getItem(tokenKey);
 } 

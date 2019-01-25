@@ -33,7 +33,7 @@ class Login extends Component {
       apiLogger.info(response);
       storeUser(response.data);
 
-      this.props.alert.success("Compte créé, bienvenue !");
+      this.props.alert.success(`Bienvenue ${this.state.name} !`);
       this.props.history.push('/propagate');
     } catch (error) {
       apiLogger.error(error);
@@ -46,6 +46,10 @@ class Login extends Component {
     try {
       const response = await login(this.state.identifier);
       apiLogger.info(response);
+      storeUser(response.data);
+      
+      this.props.alert.success(`De retour, ${response.data.name} !`);
+      this.props.history.push('/propagate');
     } catch (error) {
       apiLogger.error(error);
       this.props.alert.error(`Connexion impossible, vérifiez votre identifiant.`);
