@@ -1,0 +1,21 @@
+{
+  "short_name": "Onde Bleue",
+  "name": "L'onde bleue",
+  "icons": [
+    {
+      "src": "/icons/icons-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/icons-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#bbdfe5",
+  "display": "standalone",
+  "theme_color": "#bbdfe5"
+}
+ 
