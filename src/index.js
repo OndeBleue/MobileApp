@@ -1,15 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import AppRouter from "./AppRouter.jsx";
+import App from "./App.jsx";
 
 require('typeface-news-cycle');
 require('typeface-alegreya');
 
-ReactDOM.render(<AppRouter />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));
 
 if (module.hot) {
-  module.hot.accept('./AppRouter', () => {
-    ReactDOM.render(<AppRouter />, document.getElementById("root"));
+  module.hot.accept('./App', () => {
+    ReactDOM.render(<App />, document.getElementById("root"));
   });
 }
 
