@@ -1,5 +1,10 @@
 import React, { Component } from "react";
-import { createUser } from './actions.js';
+import { withAlert } from 'react-alert';
+import { Redirect } from "react-router-dom";
+import { createUser, login } from './actions.js';
+import { apiLogger } from "../logger.js";
+import { storeUser, restoreIdentifier } from "../storage.js";
+
 import "./Login.css";
 
 class Login extends Component {
@@ -10,15 +15,41 @@ class Login extends Component {
       identifier: '',
     };
   }
-
-  handleLogon = (event) => {
-    event.preventDefault();
-    console.log("logon: ", this.state.name);
+  
+  componentDidMount() {
+    if (this.isAuthenticated()) {
+      this.props.history.push('/map');
+    }
   }
   
-  handleLogin = (event) => {
+  isAuthenticated() {
+    return !!restoreIdentifier();
+  }
+
+  handleLogon = async (event) => {
     event.preventDefault();
-    console.log("login: ", this.state.identifier);
+    try {
+      const response = await createUser(this.state.name);
+      apiLogger.info(response);
+      storeUser(response.data);
+
+      this.props.alert.success("Compte créé, bienvenue !");
+      this.props.history.push('/map');
+    } catch (error) {
+      apiLogger.error(error);
+      this.props.alert.error(`Impossible de créer le compte.`);
+    }
+  }
+  
+  handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await login(this.state.identifier);
+      apiLogger.info(response);
+    } catch (error) {
+      apiLogger.error(error);
+      this.props.alert.error(`Connexion impossible, vérifiez votre identifiant.`);
+    }
   }
   
   handleNameChange = (event) => {
@@ -49,4 +80,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default withAlert(Login);

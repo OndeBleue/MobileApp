@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { withAlert } from 'react-alert'
-import { uiLogger } from "../logger.js"
+import { withAlert } from 'react-alert';
+import { uiLogger } from "../logger.js";
 
 class ErrorBoundary extends Component {
   static getDerivedStateFromError(error) {

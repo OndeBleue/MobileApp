@@ -1,9 +1,10 @@
+import 'typeface-news-cycle';
+import 'typeface-alegreya';
+
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App.jsx";
 
-require('typeface-news-cycle');
-require('typeface-alegreya');
 
 ReactDOM.render(<App />, document.getElementById("root"));
 

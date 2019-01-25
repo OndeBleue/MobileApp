@@ -16,8 +16,8 @@ const options = {
 }
 
 const App = () => (
-    <div className="App">
-      <AlertProvider template={AlertTemplate} {...options}>
+    <AlertProvider template={AlertTemplate} {...options}>
+      <div className="App">
         <ErrorBoundary>
           <AppRouter>
             <nav>
@@ -35,8 +35,8 @@ const App = () => (
             </nav>
           </AppRouter>
         </ErrorBoundary>
-      </AlertProvider>
-    </div>
+      </div>
+    </AlertProvider>
 );
 
 export default App;
