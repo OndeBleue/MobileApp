@@ -29,7 +29,7 @@ const App = () => (
                   <Link to="/settings">Paramètres</Link>
                 </li>
                 <li>
-                  <Link to="/map">Carte</Link>
+                  <Link to="/propagate">Carte</Link>
                 </li>
               </ul>
             </nav>

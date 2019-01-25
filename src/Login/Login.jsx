@@ -18,7 +18,7 @@ class Login extends Component {
   
   componentDidMount() {
     if (this.isAuthenticated()) {
-      this.props.history.push('/map');
+      this.props.history.push('/propagate');
     }
   }
   
@@ -34,7 +34,7 @@ class Login extends Component {
       storeUser(response.data);
 
       this.props.alert.success("Compte créé, bienvenue !");
-      this.props.history.push('/map');
+      this.props.history.push('/propagate');
     } catch (error) {
       apiLogger.error(error);
       this.props.alert.error(`Impossible de créer le compte.`);

@@ -17,9 +17,9 @@ module.exports = {
         use: ["style-loader", "css-loader"]
       },
       {
-        test: /\.(eot|svg|ttf|woff|woff2)$/, 
+        test: /\.(eot|svg|ttf|woff|woff2|png)$/, 
         loader: "file-loader"
-      }
+      },
     ]
   },
   resolve: { extensions: ["*", ".js", ".jsx"] },
