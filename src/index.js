@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import AppRouter from "./AppRouter.jsx";
 
+require('typeface-news-cycle');
+require('typeface-alegreya');
+
 ReactDOM.render(<AppRouter />, document.getElementById("root"));
 
 if (module.hot) {
