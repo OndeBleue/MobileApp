@@ -12,4 +12,8 @@ export function restoreIdentifier() {
 
 export function restoreToken() {
   return localStorage.getItem(tokenKey);
-} 
+}
+
+export function isAuthenticated() {
+  return !!restoreIdentifier() && !!restoreToken();
+}

@@ -1,10 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import { restoreIdentifier } from "../storage.js";
-
-function isAuthenticated() {
-  return !!restoreIdentifier();
-}
+import { isAuthenticated } from "../storage.js";
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props) => (

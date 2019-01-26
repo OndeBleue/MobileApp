@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withAlert } from 'react-alert';
 import { createUser, login } from './actions.js';
 import { apiLogger } from "../logger.js";
-import { storeUser, restoreIdentifier } from "../storage.js";
+import { storeUser, isAuthenticated } from "../storage.js";
 
 
 import logo from './logo.png';
@@ -15,17 +15,14 @@ class Login extends Component {
     this.state = {
       name: '',
       identifier: '',
+      tries: 0
     };
   }
   
   componentDidMount() {
-    if (Login.isAuthenticated()) {
+    if (isAuthenticated()) {
       this.props.history.push('/propagate');
     }
-  }
-  
-  static isAuthenticated() {
-    return !!restoreIdentifier();
   }
 
   handleLogon = async (event) => {
@@ -54,7 +51,13 @@ class Login extends Component {
       this.props.history.push('/propagate');
     } catch (error) {
       apiLogger.error(error);
-      this.props.alert.error(`Connexion impossible, vérifiez votre identifiant.`);
+      this.setState({ tries: this.state.tries + 1}, () => {
+        if (error.message === 'Network Error' && this.state.tries >= 5) {
+          this.props.alert.error(`Trop de tentatives infructueuses, vous pourrez réessayer dans 10 minutes.`);
+        } else {
+          this.props.alert.error('Connexion impossible, vérifiez votre identifiant.');
+        }
+      });
     }
   };
   
