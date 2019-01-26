@@ -72,16 +72,16 @@ class Login extends Component {
   render() {
     return(
       <div className="login">
-        <img src={logo} alt="logo" />
+        <img src={logo} alt="logo" className="logo" />
         <h3>L'Onde Bleue</h3>
         <form className="login-form" onSubmit={this.handleLogon}>
           <label htmlFor="name">Je me connecte pour la première fois</label>
-          <input id="name" placeholder="Mon nom" type="text" value={this.state.name} onChange={this.handleNameChange} />
+          <input id="name" placeholder="Mon nom" type="text" value={this.state.name} onChange={this.handleNameChange} required />
           <button type="submit">OK</button>
         </form>
         <form className="login-form" onSubmit={this.handleLogin}>
           <label htmlFor="identifier">Je suis déjà enregistré(e)</label>
-          <input id="identifier" placeholder="Mon numéro" type="number" value={this.state.identifier} onChange={this.handleIdentifierChange} />
+          <input id="identifier" placeholder="Mon numéro" type="number" value={this.state.identifier} onChange={this.handleIdentifierChange} required />
           <button type="submit">OK</button>
         </form>
       </div>

@@ -1,7 +1,6 @@
-.login img {
+.login .logo {
   width: 175px;
-  margin: auto;
-  margin-bottom: 1em;
+  margin: 5em auto 1em auto;
   display: block;
 }
 
@@ -13,9 +12,8 @@
 }
 
 .login-form {
-  margin: auto;
+  margin: auto auto 2em auto;
   width: 295px;
-  margin-bottom: 2em;
 }
 
 .login-form label {
@@ -35,6 +33,6 @@
   padding: 0.8em;
   border-radius: 4px;
   border: 0;
-  background-color: dodgerBlue;
-  color: white;
+  background-color: #bbdfe5;
+  color: black;
 }

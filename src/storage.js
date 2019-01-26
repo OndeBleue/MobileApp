@@ -14,6 +14,11 @@ export function restoreToken() {
   return localStorage.getItem(tokenKey);
 }
 
+export function disconnect() {
+  localStorage.removeItem(idKey);
+  localStorage.removeItem(tokenKey);
+}
+
 export function isAuthenticated() {
   return !!restoreIdentifier() && !!restoreToken();
 }
