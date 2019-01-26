@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Map, TileLayer } from 'react-leaflet';
 
-import faCog from './cog-solid.png';
+import settings from './settings.png';
 
 import 'leaflet/dist/leaflet.css';
 import "./Propagate.css";
@@ -26,7 +26,7 @@ class Propagate extends Component {
     return(
       <div className="propagate">
         <div className="toolbar">
-          <img src={faCog} alt="settings" onClick={this.navigateToSettings} />
+          <img src={settings} alt="settings" onClick={this.navigateToSettings} />
         </div>
         <Map center={position} zoom={this.state.zoom} className="leafletmap" >
           <TileLayer
