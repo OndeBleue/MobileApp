@@ -12,7 +12,7 @@ const options = {
   timeout: 5000,
   offset: '30px',
   transition: 'scale',
-  zIndex: 400
+  zIndex: 1000
 };
 
 const App = () => (

@@ -28,12 +28,14 @@ class Propagate extends Component {
         <div className="toolbar">
           <img src={settings} alt="settings" onClick={this.navigateToSettings} />
         </div>
-        <Map center={position} zoom={this.state.zoom} className="leafletmap" >
-          <TileLayer
-            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-        </Map>
+        <div className="map-container">
+          <Map center={position} zoom={this.state.zoom} className="leafletmap" >
+            <TileLayer
+              attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </Map>
+        </div>
       </div>
     );
   }

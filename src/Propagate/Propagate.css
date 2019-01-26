@@ -1,12 +1,30 @@
-.propagate .leafletmap {
-  height: 80vh;
-  border: 1em;
+.propagate {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
 }
 
 .propagate .toolbar {
   text-align: right;
+  padding: 1em 1.5em;
 }
 
 .propagate .toolbar img:hover {
   filter: brightness(0.75);
+}
+
+.propagate .map-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 4.1em;
+}
+
+.propagate .leafletmap {
+  height: 100%;
 }
