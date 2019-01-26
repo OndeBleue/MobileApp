@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { withAlert } from 'react-alert';
-import { Redirect } from "react-router-dom";
 import { createUser, login } from './actions.js';
 import { apiLogger } from "../logger.js";
 import { storeUser, restoreIdentifier } from "../storage.js";
+
+
+import logo from './logo.png';
 
 import "./Login.css";
 
@@ -17,12 +19,12 @@ class Login extends Component {
   }
   
   componentDidMount() {
-    if (this.isAuthenticated()) {
+    if (Login.isAuthenticated()) {
       this.props.history.push('/propagate');
     }
   }
   
-  isAuthenticated() {
+  static isAuthenticated() {
     return !!restoreIdentifier();
   }
 
@@ -39,7 +41,7 @@ class Login extends Component {
       apiLogger.error(error);
       this.props.alert.error(`Impossible de créer le compte.`);
     }
-  }
+  };
   
   handleLogin = async (event) => {
     event.preventDefault();
@@ -54,20 +56,20 @@ class Login extends Component {
       apiLogger.error(error);
       this.props.alert.error(`Connexion impossible, vérifiez votre identifiant.`);
     }
-  }
+  };
   
   handleNameChange = (event) => {
     this.setState({ name: event.target.value });
-  }
+  };
   
   handleIdentifierChange = (event) => {
     this.setState({ identifier: event.target.value });
-  }
+  };
   
   render() {
     return(
       <div className="login">
-        <img src="logo.png" alt="logo" />
+        <img src={logo} alt="logo" />
         <h3>L'Onde Bleue</h3>
         <form className="login-form" onSubmit={this.handleLogon}>
           <label htmlFor="name">Je me connecte pour la première fois</label>

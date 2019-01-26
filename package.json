@@ -7,6 +7,7 @@
   "author": "L'ondeBleue <contact@onde-bleue.fr>",
   "license": "MIT",
   "private": false,
+  "homepage": "https://www.onde-bleue.fr/app",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",

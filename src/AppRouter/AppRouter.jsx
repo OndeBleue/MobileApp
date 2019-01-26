@@ -8,7 +8,7 @@ import Page404 from '../Page404/Page404.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 
 const AppRouter = (props) => (
-  <Router>
+  <Router basename={DIRECTORY_BASENAME}>
     <div>
       {props.children}
       <Switch>

@@ -1,3 +1,4 @@
+const webpack = require("webpack");
 const merge = require('webpack-merge');
 const MinifyPlugin = require("babel-minify-webpack-plugin");
 const CompressionPlugin = require('compression-webpack-plugin');
@@ -16,6 +17,9 @@ module.exports = merge(common, {
     new CompressionPlugin({
       test: /\.js$|\.css$/,
       filename: '[path].gz[query]'
+    }),
+    new webpack.DefinePlugin({
+      DIRECTORY_BASENAME: JSON.stringify('/app'),
     })
   ]
 });

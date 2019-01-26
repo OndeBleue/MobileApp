@@ -14,7 +14,7 @@ const options = {
   offset: '30px',
   transition: 'scale',
   zIndex: 400
-}
+};
 
 const App = () => (
     <AlertProvider template={AlertTemplate} {...options}>
