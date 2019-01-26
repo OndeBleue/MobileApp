@@ -1,9 +1,7 @@
 const path = require("path");
-const webpack = require("webpack");
 
 module.exports = {
   entry:  ["@babel/polyfill", "./src/index.js"],
-  mode: "development",
   module: {
     rules: [
       {
@@ -28,17 +26,4 @@ module.exports = {
     publicPath: "/dist/",
     filename: "bundle.js"
   },
-  devServer: {
-    contentBase: path.join(__dirname, "public/"),
-    port: 3000,
-    publicPath: "http://0.0.0.0:3000/dist/",
-    hotOnly: true,
-    host: '0.0.0.0',
-    disableHostCheck: true,
-    historyApiFallback: {
-      index: 'index.html'
-    }
-  },
-  devtool: 'eval-source-map',
-  plugins: [new webpack.HotModuleReplacementPlugin()]
 };
