@@ -20,6 +20,6 @@ module.exports = merge(common, {
     }),
     new webpack.DefinePlugin({
       DIRECTORY_BASENAME: JSON.stringify('/app'),
-    })
+    }),
   ]
 });

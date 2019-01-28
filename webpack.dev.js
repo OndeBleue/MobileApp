@@ -14,6 +14,9 @@ module.exports = merge(common, {
     disableHostCheck: true,
     historyApiFallback: {
       index: 'index.html'
+    },
+    headers: {
+      'Service-Worker-Allowed': '/'
     }
   },
   devtool: 'eval-source-map',

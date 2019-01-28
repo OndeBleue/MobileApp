@@ -1,4 +1,5 @@
 const path = require("path");
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = {
   entry:  ["@babel/polyfill", "./src/index.js"],
@@ -26,4 +27,21 @@ module.exports = {
     publicPath: "/dist/",
     filename: "bundle.js"
   },
+  plugins: [
+    new WorkboxPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true,
+      exclude: [/\.(?:png|jpg|jpeg|svg)$/],
+      runtimeCaching: [{
+        urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
+        handler: 'cacheFirst',
+        options: {
+          cacheName: 'images',
+          expiration: {
+            maxEntries: 50,
+          },
+        },
+      }],
+    }),
+  ]
 };

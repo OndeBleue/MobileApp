@@ -20,3 +20,10 @@ if (!window.location.origin) {
   + window.location.hostname
   + (window.location.port ? ':' + window.location.port : '');
 }
+
+// webpack plugin for service worker generation
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('dist/service-worker.js', { scope: '/' });
+  });
+}

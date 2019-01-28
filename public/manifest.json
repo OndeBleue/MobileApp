@@ -3,9 +3,49 @@
   "name": "L'onde bleue",
   "icons": [
     {
+      "src": "icons/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "icons/icons-48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icons-72.png",
+      "type": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "icons/icons-96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "icons/icons-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icons-144.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "icons/icons-152.png",
+      "type": "image/png",
+      "sizes": "152x152"
+    },
+    {
       "src": "icons/icons-192.png",
       "type": "image/png",
       "sizes": "192x192"
+    },
+    {
+      "src": "icons/icons-256.png",
+      "type": "image/png",
+      "sizes": "256x256"
     },
     {
       "src": "icons/icons-512.png",
@@ -13,7 +53,12 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/",
+  "orientation": "portrait",
+  "dir": "ltr",
+  "lang": "fr",
+  "scope": "/app/",
+  "start_url": "/app/",
+  "description": "Partagez votre position pendant l'onde bleue. Prenez rendez-vous pour dimanche prochain.",
   "background_color": "#bbdfe5",
   "display": "standalone",
   "theme_color": "#bbdfe5"
