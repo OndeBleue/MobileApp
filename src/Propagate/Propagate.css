@@ -23,6 +23,12 @@
   right: 0;
   bottom: 0;
   top: 6.1em;
+  transition-property: top;
+  transition-duration: 0.5s;
+}
+
+.propagate .map-container.enlarge-map {
+  top: 4em;
 }
 
 .propagate .leafletmap {
@@ -41,4 +47,17 @@
   border: 0;
   background-color: #bbdfe5;
   color: black;
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.propagate .leaflet-pane .leaflet-marker-pane > * {
+  animation: fade-up 0.5s ease;
 }
