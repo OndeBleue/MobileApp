@@ -1,5 +1,6 @@
 const path = require("path");
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   entry:  ["@babel/polyfill", "./src/index.js"],
@@ -43,5 +44,6 @@ module.exports = {
         },
       }],
     }),
+    new CleanWebpackPlugin(['dist/']),
   ]
 };
