@@ -1,5 +1,5 @@
-const REFRESH_TIMEOUT = 10000;
-const MAXIMUM_POSITION_AGE = 10000;
+const REFRESH_TIMEOUT = 30000;
+const MAXIMUM_POSITION_AGE = 60000;
 
 // based on https://developer.mozilla.org/en-US/docs/Web/API/PositionError
 const UNKNOWN_ERROR = 0;
@@ -43,12 +43,27 @@ export function watchLocation(callback) {
   if (!navigator.geolocation) {
     return callback(Object.assign(new Error("navigator.geolocation is not available"), { name: "PositionError", code: GEOLOCATION_UNAVAILABLE }));
   }
-  navigator.geolocation.watchPosition(
-    (position) => callback(null, position),
-    ({ code, message }) =>
-    callback(Object.assign(new Error(message), { name: "PositionError", code })),
+
+  const successCallback = (position) => callback(null, position);
+  const errorCallback = ({ code, message }) => callback(Object.assign(new Error(message), { name: "PositionError", code }));
+
+  // first we try to run geolocation with high accuracy enabled
+  let watchId = runWatcher(true, successCallback, ({ code }) => {
+    // if this fails, we retry with high accuracy disabled
+    if (code === TIMEOUT) {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = runWatcher(false, successCallback, errorCallback);
+    }
+  });
+}
+
+
+function runWatcher(highAccuracy, successCallback, errorCallback) {
+  return navigator.geolocation.watchPosition(
+    successCallback,
+    errorCallback,
     {
-      enableHighAccuracy: true,
+      enableHighAccuracy: highAccuracy,
       timeout: REFRESH_TIMEOUT,
       maximumAge: MAXIMUM_POSITION_AGE
     });
