@@ -20,14 +20,27 @@ export default class Location {
     this.highAccuracyWatchId = null;
     this.lowAccuracyWatchId = null;
     this.positions = [];
+
     Location.instance = this;
   }
 
   get last() {
     if (this.positions.length > 0) {
+      // we search for the last position
       for (let i = this.positions.length - 1; i >= 0; i--) {
         const position = this.positions[i];
-        if (position.location) return position;
+        if (position.location) {
+          // when found, if it was highly accurate, we return it
+          if (position.highAccuracy) return position;
+          // otherwise, we look for a previous recent position that was highly accurate
+          for (let j = i - 1; j >= 0; j--) {
+            const position2 = this.positions[j];
+            if (position2.datetime.getTime() - position.datetime.getTime() > MAXIMUM_POSITION_AGE) break;
+            if (position2.location && position2.highAccuracy) return position2;
+          }
+          // finally, we can't get better so we return the origin position
+          return position;
+        }
       }
     }
     return undefined;
