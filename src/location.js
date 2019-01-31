@@ -8,63 +8,105 @@ const POSITION_UNAVAILABLE = 2;
 const TIMEOUT = 3;
 const GEOLOCATION_UNAVAILABLE = 4;
 
-export function handleLocationError(error) {
-  switch(error.code) {
-    case PERMISSION_DENIED:
-      return "Vous devez autoriser la localisation.";
-    case POSITION_UNAVAILABLE:
-      return "Votre position n'est pas disponible.";
-    case TIMEOUT:
-      return "Impossible d'obtenir votre position dans un délai raisonnable.";
-    case GEOLOCATION_UNAVAILABLE:
-      return "Votre navigateur ne supporte pas la géo-localisation.";
-    case UNKNOWN_ERROR:
-    default:
-      return "Une erreur inconnue est survenue.";
-  }
-}
+// Singleton class, will keep locations history in memory
+export default class Location {
 
-export function getCurrentLocation() {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      return reject(Object.assign(new Error("navigator.geolocation is not available"), { name: "PositionError", code: GEOLOCATION_UNAVAILABLE }));
+  static instance;
+
+  constructor() {
+    if (Location.instance) {
+      return Location.instance;
     }
-    navigator.geolocation.getCurrentPosition(resolve, ({ code, message }) =>
-        reject(Object.assign(new Error(message), { name: "PositionError", code })),
+    this.highAccuracyWatchId = null;
+    this.lowAccuracyWatchId = null;
+    this.positions = [];
+    Location.instance = this;
+  }
+
+  get last() {
+    if (this.positions.length > 0) {
+      for (let i = this.positions.length - 1; i >= 0; i--) {
+        const position = this.positions[i];
+        if (position.location) return position;
+      }
+    }
+    return undefined;
+  }
+
+  get error() {
+    const last = this.positions[this.positions.length - 1];
+    if (last instanceof Error) return last;
+
+    return undefined;
+  }
+
+  watchLocation() {
+    if (!navigator.geolocation) {
+      return this.positions.push(Object.assign(new Error("navigator.geolocation is not available"), {
+        name: "PositionError",
+        code: GEOLOCATION_UNAVAILABLE ,
+        datetime: new Date(),
+      }));
+    }
+
+    const errorCallback = ({ code, message }) => {
+      this.positions.push(Object.assign(new Error(message), {
+        name: "PositionError",
+        code,
+        datetime: new Date(),
+      }));
+    };
+
+    // we run geolocation with high accuracy enabled ans disabled
+    this.highAccuracyWatchId = Location.runWatcher(true, (location) => {
+      this.positions.push({
+        location,
+        datetime: new Date,
+        highAccuracy: true
+      });
+    }, errorCallback);
+    this.lowAccuracyWatchId = Location.runWatcher(false, (location) => {
+      this.positions.push({
+        location,
+        datetime: new Date,
+        highAccuracy: false
+      });
+    }, errorCallback);
+  }
+
+  stopWatching() {
+    if (this.highAccuracyWatchId) {
+      navigator.geolocation.clearWatch(this.highAccuracyWatchId);
+    }
+    if (this.lowAccuracyWatchId) {
+      navigator.geolocation.clearWatch(this.lowAccuracyWatchId);
+    }
+  }
+
+  static runWatcher(highAccuracy, successCallback, errorCallback) {
+    return navigator.geolocation.watchPosition(
+      successCallback,
+      errorCallback,
       {
-        enableHighAccuracy: true,
-        timeout: REFRESH_TIMEOUT,
+        enableHighAccuracy: highAccuracy,
+        timeout: highAccuracy ? REFRESH_TIMEOUT * 2 : REFRESH_TIMEOUT,
         maximumAge: MAXIMUM_POSITION_AGE
       });
-  });
-}
-
-export function watchLocation(callback) {
-  if (!navigator.geolocation) {
-    return callback(Object.assign(new Error("navigator.geolocation is not available"), { name: "PositionError", code: GEOLOCATION_UNAVAILABLE }));
   }
 
-  const successCallback = (position) => callback(null, position);
-  const errorCallback = ({ code, message }) => callback(Object.assign(new Error(message), { name: "PositionError", code }));
-
-  // first we try to run geolocation with high accuracy enabled
-  let watchId = runWatcher(true, successCallback, ({ code }) => {
-    // if this fails, we retry with high accuracy disabled
-    if (code === TIMEOUT) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = runWatcher(false, successCallback, errorCallback);
+  static handleLocationError(error) {
+    switch(error.code) {
+      case PERMISSION_DENIED:
+        return "Vous devez autoriser la localisation.";
+      case POSITION_UNAVAILABLE:
+        return "Votre position n'est pas disponible.";
+      case TIMEOUT:
+        return "Impossible d'obtenir votre position dans un délai raisonnable.";
+      case GEOLOCATION_UNAVAILABLE:
+        return "Votre navigateur ne supporte pas la géo-localisation.";
+      case UNKNOWN_ERROR:
+      default:
+        return "Une erreur inconnue est survenue.";
     }
-  });
-}
-
-
-function runWatcher(highAccuracy, successCallback, errorCallback) {
-  return navigator.geolocation.watchPosition(
-    successCallback,
-    errorCallback,
-    {
-      enableHighAccuracy: highAccuracy,
-      timeout: REFRESH_TIMEOUT,
-      maximumAge: MAXIMUM_POSITION_AGE
-    });
+  }
 }

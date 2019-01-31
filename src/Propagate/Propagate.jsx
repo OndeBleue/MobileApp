@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { withAlert } from "react-alert";
 import L from 'leaflet'
-import { watchLocation, handleLocationError } from '../location';
+import Location from '../location';
 import { uiLogger } from '../logger';
 
 import settings from './settings.png';
@@ -18,30 +18,40 @@ export const meIcon = new L.Icon({
   popupAnchor: [0, -27]
 });
 
+const REFRESH_POSITION = 10000;
+
 class Propagate extends Component {
   constructor(props) {
     super(props);
+
+    const location = new Location();
+    const last = location.last;
+    const mapCenter = last ? [last.location.coords.latitude, last.location.coords.longitude]: [46.76, 2,64];
+    const zoomLevel = last ? 14 : 5;
     
     this.state = {
-      mapCenter: [46.76, 2,64],
-      zoomLevel: 5,
+      mapCenter,
+      zoomLevel,
       marker: undefined,
       isPropagating: false,
+      hasZoomed: false,
+      location,
+      positionUpdater: undefined,
     };
   }
 
   componentDidMount() {
-    watchLocation((error, location) => {
-      if (error && error.name === 'PositionError') {
-        uiLogger.error(error);
-        return this.props.alert.error(handleLocationError(error));
-      }
-      this.setState({
-        marker: [location.coords.latitude, location.coords.longitude],
-        mapCenter: [location.coords.latitude, location.coords.longitude],
-        zoomLevel: 13,
-      });
+    this.state.location.watchLocation();
+    this.setState({
+      positionUpdater: setInterval(this.updatePosition, REFRESH_POSITION)
     });
+  }
+
+  componentWillUnmount() {
+    this.state.location.stopWatching();
+    if (this.state.positionUpdater) {
+      clearInterval(this.state.positionUpdater);
+    }
   }
 
   handleLocate = async () => {
@@ -50,8 +60,33 @@ class Propagate extends Component {
     });
   };
 
+  handleZoomEnd = (event) => {
+    this.setState({
+      zoomLevel: event.target.zoom,
+      hasZoomed: true,
+    });
+  };
+
   navigateToSettings = () => {
     this.props.history.push('/settings');
+  };
+
+  updatePosition = () => {
+    const position = this.state.location.last;
+    if (position) {
+      const zoomLevel = this.state.hasZoomed ? this.state.zoomLevel : 14;
+      this.setState({
+        marker: [position.location.coords.latitude, position.location.coords.longitude],
+        mapCenter: [position.location.coords.latitude, position.location.coords.longitude],
+        zoomLevel,
+      });
+    } else {
+      const error = this.state.location.error;
+      if (error) {
+        uiLogger.error(error);
+        return this.props.alert.error(Location.handleLocationError(error));
+      }
+    }
   };
 
   render() {
@@ -73,7 +108,7 @@ class Propagate extends Component {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             {this.state.marker && isPropagating &&
-              <Marker position={this.state.marker} icon={meIcon}>
+              <Marker position={this.state.marker} icon={meIcon} onZoomend={this.handleZoomEnd}>
                 <Popup>
                   Je suis là !
                 </Popup>
