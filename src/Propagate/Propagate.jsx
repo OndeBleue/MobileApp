@@ -18,6 +18,7 @@ export const meIcon = new L.Icon({
   popupAnchor: [0, -27]
 });
 
+const FIND_POSITION = 1000;
 const REFRESH_POSITION = 10000;
 
 class Propagate extends Component {
@@ -37,18 +38,22 @@ class Propagate extends Component {
       hasZoomed: false,
       location,
       positionUpdater: undefined,
+      positionFinder: undefined,
     };
   }
 
   componentDidMount() {
     this.state.location.watchLocation();
     this.setState({
-      positionUpdater: setInterval(this.updatePosition, REFRESH_POSITION)
+      positionFinder: setInterval(this.initMapPosition, FIND_POSITION),
     });
   }
 
   componentWillUnmount() {
     this.state.location.stopWatching();
+    if (this.state.positionFinder) {
+      clearInterval(this.state.positionFinder);
+    }
     if (this.state.positionUpdater) {
       clearInterval(this.state.positionUpdater);
     }
@@ -71,7 +76,17 @@ class Propagate extends Component {
     this.props.history.push('/settings');
   };
 
-  updatePosition = () => {
+  initMapPosition = () => {
+    this.updatePosition(() => {
+      clearInterval(this.state.positionFinder);
+      this.setState({
+        positionFinder: undefined,
+        positionUpdater: setInterval(this.updatePosition, REFRESH_POSITION),
+      })
+    });
+  };
+
+  updatePosition = (callback) => {
     const position = this.state.location.last;
     if (position) {
       const zoomLevel = this.state.hasZoomed ? this.state.zoomLevel : 14;
@@ -79,7 +94,7 @@ class Propagate extends Component {
         marker: [position.location.coords.latitude, position.location.coords.longitude],
         mapCenter: [position.location.coords.latitude, position.location.coords.longitude],
         zoomLevel,
-      });
+      }, callback);
     } else {
       const error = this.state.location.error;
       if (error) {

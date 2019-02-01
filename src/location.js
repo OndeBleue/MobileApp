@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const REFRESH_TIMEOUT = 30000;
 const MAXIMUM_POSITION_AGE = 60000;
 
@@ -25,22 +27,16 @@ export default class Location {
   }
 
   get last() {
-    if (this.positions.length > 0) {
-      // we search for the last position
-      for (let i = this.positions.length - 1; i >= 0; i--) {
-        const position = this.positions[i];
-        if (position.location) {
-          // when found, if it was highly accurate, we return it
-          if (position.highAccuracy) return position;
-          // otherwise, we look for a previous recent position that was highly accurate
-          for (let j = i - 1; j >= 0; j--) {
-            const position2 = this.positions[j];
-            if (position2.datetime.getTime() - position.datetime.getTime() > MAXIMUM_POSITION_AGE) break;
-            if (position2.location && position2.highAccuracy) return position2;
-          }
-          // finally, we can't get better so we return the origin position
-          return position;
-        }
+    // we search for the last position
+    for (let i = this.positions.length - 1; i >= 0; i--) {
+      const position = this.positions[i];
+      if (position.location) {
+        // when found, we check the nearest and most accurate position
+        const nearest = this.positions.filter(p => position.datetime.getTime() - p.datetime.getTime() < MAXIMUM_POSITION_AGE);
+        const min = _.min(nearest.map(p => p.location.coords.accuracy));
+        const mostAccurates = nearest.filter(p => p.location.coords.accuracy === min);
+        // finally return the nearest position (in time), possibly undefined
+        return _.orderBy(mostAccurates, [p => p.datetime.getTime()], ['desc'])[0];
       }
     }
     return undefined;
