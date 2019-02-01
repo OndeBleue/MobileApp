@@ -59,7 +59,7 @@ class Propagate extends Component {
     }
   }
 
-  handleLocate = async () => {
+  handleIAmHere = async () => {
     this.setState({
       isPropagating: true,
     });
@@ -113,10 +113,10 @@ class Propagate extends Component {
         </div>
         {!isPropagating &&
           <div className="buttons-bar">
-            <button onClick={this.handleLocate}>Je suis là !</button>
+            <button onClick={this.handleIAmHere}>Je suis là !</button>
           </div>
         }
-        <div className={`map-container ${isPropagating ? 'enlarge-map' : ''}`}>
+        <div className="map-container">
           <Map center={this.state.mapCenter} zoom={this.state.zoomLevel} className="leafletmap" >
             <TileLayer
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
