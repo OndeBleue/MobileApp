@@ -135,20 +135,20 @@ class Propagate extends Component {
   };
 
   render() {
-    const { isPropagating } = this.state;
+    const { isPropagating, gpsStatus, mapCenter, zoomLevel, positionFinder } = this.state;
     return(
       <div className="propagate">
         <div className="toolbar">
-          <img src={this.state.gpsStatus} alt="GPS status" onClick={this.showGpsStatusMessage}/>
+          <img src={gpsStatus} alt="GPS status" onClick={this.showGpsStatusMessage}/>
           <img src={settings} alt="settings" onClick={this.navigateToSettings} />
         </div>
-        {!isPropagating &&
+        {!isPropagating && !positionFinder &&
           <div className="buttons-bar">
             <button onClick={this.handleIAmHere}>Je suis là !</button>
           </div>
         }
         <div className="map-container">
-          <Map center={this.state.mapCenter} zoom={this.state.zoomLevel} className="leafletmap" >
+          <Map center={mapCenter} zoom={zoomLevel} className="leafletmap" >
             <TileLayer
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
