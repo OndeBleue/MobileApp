@@ -3,7 +3,8 @@ import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { withAlert } from "react-alert";
 import L from 'leaflet'
 import Location from '../location';
-import { uiLogger } from '../logger';
+import { uiLogger, apiLogger } from '../logger';
+import { createLocation } from './actions';
 
 import settings from './settings.png';
 import me from './me.png';
@@ -22,7 +23,7 @@ export const meIcon = new L.Icon({
 });
 
 const FIND_POSITION = 1000;
-const REFRESH_POSITION = 10000;
+const REFRESH_POSITION = 30000;
 
 class Propagate extends Component {
   constructor(props) {
@@ -66,7 +67,7 @@ class Propagate extends Component {
   handleIAmHere = async () => {
     this.setState({
       isPropagating: true,
-    });
+    }, this.pushPosition);
   };
 
   handleZoomEnd = (event) => {
@@ -104,16 +105,32 @@ class Propagate extends Component {
     });
   };
 
+  pushPosition = () => {
+    const position = this.state.location.last;
+    if (position) {
+      const coordinates = [position.location.coords.latitude, position.location.coords.longitude];
+      if (this.state.isPropagating) {
+        createLocation(coordinates, position.datetime).then(res => {
+          apiLogger.info(res);
+        }).catch((e) => {
+          apiLogger.error(e);
+        })
+      }
+    }
+  };
+
   updatePosition = (callback) => {
     const position = this.state.location.last;
     if (position) {
+      const coordinates = [position.location.coords.latitude, position.location.coords.longitude];
       const zoomLevel = this.state.hasZoomed ? this.state.zoomLevel : 14;
       this.setState({
-        marker: [position.location.coords.latitude, position.location.coords.longitude],
-        mapCenter: [position.location.coords.latitude, position.location.coords.longitude],
+        marker: coordinates,
+        mapCenter: coordinates,
         gpsStatus: this.gpsStatus(position, this.state.location.error),
         zoomLevel,
       }, callback);
+      this.pushPosition();
     }
   };
 
