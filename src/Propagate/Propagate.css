@@ -10,8 +10,12 @@
 
 .propagate .toolbar {
   text-align: right;
-  padding: 1em 1.5em;
+  padding: 1em 0.5em;
   z-index: 1700;
+}
+
+.propagate .toolbar img {
+  margin: 0 0.5em;
 }
 
 .propagate .toolbar img:hover {

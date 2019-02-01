@@ -7,6 +7,9 @@ import { uiLogger } from '../logger';
 
 import settings from './settings.png';
 import me from './me.png';
+import gpsFixed from './gps_fixed.png';
+import gpsNotFixed from './gps_not_fixed.png';
+import gpsOff from './gps_off.png';
 
 import 'leaflet/dist/leaflet.css';
 import "./Propagate.css";
@@ -39,6 +42,7 @@ class Propagate extends Component {
       location,
       positionUpdater: undefined,
       positionFinder: undefined,
+      gpsStatus: this.gpsStatus(last, location.error),
     };
   }
 
@@ -76,6 +80,20 @@ class Propagate extends Component {
     this.props.history.push('/settings');
   };
 
+  showGpsStatusMessage = ()=> {
+    const error = this.state.location.error;
+    if (error) {
+      uiLogger.error(error);
+      return this.props.alert.error(Location.handleLocationError(error));
+    }
+  };
+
+  gpsStatus = (position, error) => {
+    if (!position && !error) return gpsNotFixed;
+    if (position && !error) return gpsFixed;
+    if (!position && error) return gpsOff;
+  };
+
   initMapPosition = () => {
     this.updatePosition(() => {
       clearInterval(this.state.positionFinder);
@@ -93,14 +111,9 @@ class Propagate extends Component {
       this.setState({
         marker: [position.location.coords.latitude, position.location.coords.longitude],
         mapCenter: [position.location.coords.latitude, position.location.coords.longitude],
+        gpsStatus: this.gpsStatus(position, this.state.location.error),
         zoomLevel,
       }, callback);
-    } else {
-      const error = this.state.location.error;
-      if (error) {
-        uiLogger.error(error);
-        return this.props.alert.error(Location.handleLocationError(error));
-      }
     }
   };
 
@@ -109,6 +122,7 @@ class Propagate extends Component {
     return(
       <div className="propagate">
         <div className="toolbar">
+          <img src={this.state.gpsStatus} alt="GPS status" onClick={this.showGpsStatusMessage}/>
           <img src={settings} alt="settings" onClick={this.navigateToSettings} />
         </div>
         {!isPropagating &&
