@@ -4,7 +4,7 @@ import { withAlert } from "react-alert";
 import L from 'leaflet'
 import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
-import { createLocation } from './actions';
+import { createLocation, fetchNearMe } from './actions';
 
 import settings from './settings.png';
 import me from './me.png';
@@ -23,6 +23,7 @@ export const meIcon = new L.Icon({
 });
 
 const FIND_POSITION = 1000;
+const FIND_NEAR_ME = 31000;
 const REFRESH_POSITION = 30000;
 
 class Propagate extends Component {
@@ -43,6 +44,7 @@ class Propagate extends Component {
       location,
       positionUpdater: undefined,
       positionFinder: undefined,
+      nearMeUpdater: undefined,
       gpsStatus: this.gpsStatus(last, location.error),
     };
   }
@@ -51,6 +53,7 @@ class Propagate extends Component {
     this.state.location.watchLocation();
     this.setState({
       positionFinder: setInterval(this.initMapPosition, FIND_POSITION),
+      nearMeUpdater: setInterval(this.updateNearMe, FIND_NEAR_ME),
     });
   }
 
@@ -61,6 +64,9 @@ class Propagate extends Component {
     }
     if (this.state.positionUpdater) {
       clearInterval(this.state.positionUpdater);
+    }
+    if (this.state.nearMeUpdater) {
+      clearInterval(this.state.nearMeUpdater);
     }
   }
 
@@ -134,9 +140,17 @@ class Propagate extends Component {
     }
   };
 
+  updateNearMe = () => {
+    fetchNearMe(this.state.mapCenter, 25).then((positions) => {
+      apiLogger.info(positions);
+    }).catch((error) => {
+      apiLogger.error(error);
+    });
+  };
+
   render() {
     const { isPropagating, gpsStatus, mapCenter, zoomLevel, positionFinder } = this.state;
-    return(
+    return (
       <div className="propagate">
         <div className="toolbar">
           <img src={gpsStatus} alt="GPS status" onClick={this.showGpsStatusMessage}/>
