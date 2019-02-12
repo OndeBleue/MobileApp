@@ -22,18 +22,7 @@ export function createLocation(coordinates, datetime) {
 
 export function fetchNearMe(coordinates, distance) {
   const token = restoreToken();
-  const query = {
-    coordinates: {
-      $near: {
-        $geometry: {
-          type: "Point",
-          coordinates: coordinates
-        },
-        $maxDistance: distance,
-      }
-    }
-  };
-  return axios.get(`${API_URL}/locations?where=${JSON.stringify(query)}`, {
+  return axios.get(`${API_URL}/around-me?aggregate={"$center": [${coordinates}], "$distance": ${distance}}`, {
     headers: {
       'Authorization': `Token ${token}`,
     },
