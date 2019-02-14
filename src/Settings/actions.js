@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 import { API_URL } from '../config.js';
 import { restoreIdentifier } from '../storage';
 

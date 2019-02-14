@@ -5,7 +5,7 @@ import L from 'leaflet'
 import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import { restoreId } from '../storage';
-import { createLocation, fetchNearMe } from './actions';
+import { createLocation, fetchPositions } from './actions';
 
 import settings from './settings.png';
 import me from './me.png';
@@ -32,8 +32,8 @@ export const meIcon = new L.Icon({
 });
 
 const FIND_POSITION = 1000;
-const FIND_NEAR_ME = 31000;
-const REFRESH_POSITION = 30000;
+const FIND_NEAR_ME = 61000;
+const REFRESH_POSITION = 60000;
 
 class Propagate extends Component {
   constructor(props) {
@@ -131,6 +131,7 @@ class Propagate extends Component {
       if (this.state.isPropagating) {
         createLocation(coordinates, position.datetime).then(res => {
           apiLogger.info(res);
+          this.updateNearMe();
         }).catch((e) => {
           apiLogger.error(e);
         })
@@ -153,7 +154,7 @@ class Propagate extends Component {
   };
 
   updateNearMe = () => {
-    fetchNearMe(this.state.mapCenter, 25).then((positions) => {
+    fetchPositions(this.state.mapCenter, 25).then((positions) => {
       this.setState({
         people: positions.data._items,
       });

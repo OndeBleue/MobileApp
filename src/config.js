@@ -1,3 +1,3 @@
-export const API_URL = "https://api.onde-bleue.fr";
+export const API_URL = "http://localhost:5000";
 
 export const LOG_LEVEL = "info";
