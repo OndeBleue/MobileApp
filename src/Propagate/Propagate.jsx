@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { withAlert } from "react-alert";
 import L from 'leaflet'
+import geolib from 'geolib';
 import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import { restoreId } from '../storage';
@@ -51,6 +52,7 @@ class Propagate extends Component {
       zoomLevel,
       isPropagating: false,
       hasZoomed: false,
+      hasMoved: false,
       location,
       positionUpdater: undefined,
       positionFinder: undefined,
@@ -59,6 +61,8 @@ class Propagate extends Component {
       people: [],
       userId,
     };
+
+    this.mapRef = React.createRef();
   }
 
   componentDidMount() {
@@ -87,11 +91,25 @@ class Propagate extends Component {
     }, this.pushPosition);
   };
 
-  handleZoomEnd = (event) => {
-    this.setState({
-      zoomLevel: event.target.zoom,
-      hasZoomed: true,
-    });
+  handleZoomEnd = () => {
+    const map = this.mapRef.current;
+    if (map != null) {
+      const zoomLevel = map.leafletElement.getZoom();
+      this.setState({ zoomLevel, hasZoomed: true }, () => {
+        this.updateNearMe();
+      });
+    }
+  };
+
+  handleMoveEnd = () => {
+    const map = this.mapRef.current;
+    if (map != null) {
+      const center = map.leafletElement.getCenter();
+      const mapCenter = [center.lat, center.lng];
+      this.setState({ mapCenter, hasMoved: true }, () => {
+        this.updateNearMe();
+      });
+    }
   };
 
   navigateToSettings = () => {
@@ -110,6 +128,19 @@ class Propagate extends Component {
     if (!position && !error) return gpsNotFixed;
     if (position && !error) return gpsFixed;
     if (!position && error) return gpsOff;
+  };
+
+
+  mapRadius = () => {
+    const map = this.mapRef.current;
+    if (map != null) {
+      const bounds = map.leafletElement.getBounds();
+      return geolib.getDistanceSimple(
+        { latitude: this.state.mapCenter[0], longitude: this.state.mapCenter[1] },
+        { latitude: bounds._northEast.lat, longitude: bounds._northEast.lng }
+      );
+    }
+    return 100;
   };
 
   initMapPosition = () => {
@@ -142,10 +173,10 @@ class Propagate extends Component {
   updatePosition = (callback) => {
     const position = this.state.location.last;
     if (position) {
-      const coordinates = [position.location.coords.latitude, position.location.coords.longitude];
+      const mapCenter = this.state.hasMoved ? this.state.mapCenter : [position.location.coords.latitude, position.location.coords.longitude];
       const zoomLevel = this.state.hasZoomed ? this.state.zoomLevel : 14;
       this.setState({
-        mapCenter: coordinates,
+        mapCenter,
         gpsStatus: this.gpsStatus(position, this.state.location.error),
         zoomLevel,
       }, callback);
@@ -154,7 +185,7 @@ class Propagate extends Component {
   };
 
   updateNearMe = () => {
-    fetchPositions(this.state.mapCenter, 25).then((positions) => {
+    fetchPositions(this.state.mapCenter, this.mapRadius()).then((positions) => {
       this.setState({
         people: positions.data._items,
       });
@@ -192,7 +223,14 @@ class Propagate extends Component {
           </div>
         }
         <div className="map-container">
-          <Map center={mapCenter} zoom={zoomLevel} className="leafletmap" onZoomend={this.handleZoomEnd}>
+          <Map center={mapCenter}
+               zoom={zoomLevel}
+               className="leafletmap"
+               onZoomend={this.handleZoomEnd}
+               onMoveend={this.handleMoveEnd}
+               maxZoom={18}
+               minZoom={5}
+               ref={this.mapRef}>
             <TileLayer
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

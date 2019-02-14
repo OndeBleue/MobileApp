@@ -1,3 +1,5 @@
-export const API_URL = "http://localhost:5000";
+// constants defined in webpack.env.js
 
-export const LOG_LEVEL = "info";
+export const API_URL = API_ROOT;
+
+export const LOG_LEVEL = LOGGING_LEVEL;

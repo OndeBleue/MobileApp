@@ -20,6 +20,8 @@ module.exports = merge(common, {
     }),
     new webpack.DefinePlugin({
       DIRECTORY_BASENAME: JSON.stringify('/app'),
+      LOGGING_LEVEL: JSON.stringify('error'),
+      API_ROOT: JSON.stringify('https://api.onde-bleue.fr'),
     }),
   ]
 });

@@ -24,6 +24,8 @@ module.exports = merge(common, {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       DIRECTORY_BASENAME: JSON.stringify('/'),
+      LOGGING_LEVEL: JSON.stringify('info'),
+      API_ROOT: JSON.stringify('http://localhost:5000'),
     })
   ]
 });
