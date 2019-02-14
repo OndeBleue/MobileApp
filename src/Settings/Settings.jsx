@@ -74,6 +74,10 @@ class Settings extends Component {
           <input id="name" type="text" value={this.state.name} onChange={this.handleNameChange} required />
           <button type="submit">OK</button>
         </form>
+        <form className="form profile-form">
+          <label htmlFor="identifier">Mon identifiant :</label>
+          <input value={this.state.storage.identifier} readOnly />
+        </form>
       </div>
     );
   }
