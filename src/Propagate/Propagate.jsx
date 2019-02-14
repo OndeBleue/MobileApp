@@ -3,6 +3,7 @@ import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { withAlert } from "react-alert";
 import L from 'leaflet'
 import geolib from 'geolib';
+import moment from 'moment';
 import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import Storage from '../storage';
@@ -35,6 +36,8 @@ export const meIcon = new L.Icon({
 const FIND_POSITION = 1000;
 const FIND_NEAR_ME = 61000;
 const REFRESH_POSITION = 60000;
+
+moment.locale('fr');
 
 class Propagate extends Component {
   constructor(props) {
@@ -204,8 +207,9 @@ class Propagate extends Component {
       const icon = itsMe ? meIcon : peopleIcon;
       return (
         <Marker key={p._id} position={p.coordinates.coordinates} icon={icon}>
-          {itsMe && <Popup>
-            Je suis là !
+          <Popup>
+            {itsMe && <span>Je suis là !</span>}
+            {!itsMe && <span>{p.userName}, à {moment(p.datetime).format('LT')}</span>}
           </Popup>}
         </Marker>
       )
