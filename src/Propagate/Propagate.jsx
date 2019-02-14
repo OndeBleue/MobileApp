@@ -51,7 +51,7 @@ class Propagate extends Component {
     this.state = {
       mapCenter,
       zoomLevel,
-      isPropagating: false,
+      isPropagating: storage.isPropagating,
       hasZoomed: false,
       hasMoved: false,
       location,
@@ -88,6 +88,7 @@ class Propagate extends Component {
   }
 
   handleIAmHere = async () => {
+    this.state.storage.isPropagating = true;
     this.setState({
       isPropagating: true,
     }, this.pushPosition);

@@ -16,6 +16,7 @@ export default class Storage {
     this.identifierData = undefined;
     this.tokenData = undefined;
     this.idData = undefined;
+    this.isPropagatingData = false;
   }
 
   get identifier() {
@@ -43,6 +44,14 @@ export default class Storage {
     const value = localStorage.getItem(uuidKey);
     this.idData = value;
     return value;
+  }
+
+  get isPropagating() {
+    return this.isPropagatingData;
+  }
+
+  set isPropagating(value) {
+    this.isPropagatingData = value;
   }
 
   storeUser(user) {
