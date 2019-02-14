@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withAlert } from "react-alert";
-import { disconnect } from "../storage";
+import Storage from "../storage";
 import { getCurrentUser, updateUser } from './actions';
 import { apiLogger } from "../logger.js";
 
@@ -13,10 +13,14 @@ import "./Settings.css";
 class Settings extends Component {
   constructor(props) {
     super(props);
+
+    const storage = new Storage();
+
     this.state = {
       userId: undefined,
       etag: undefined,
       name: '',
+      storage,
     }
   }
 
@@ -32,7 +36,7 @@ class Settings extends Component {
   }
 
   handleDisconnect = () => {
-    disconnect();
+    this.state.storage.disconnect();
     this.props.history.push('/login');
   };
 

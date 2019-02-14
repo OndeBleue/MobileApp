@@ -1,10 +1,12 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import { isAuthenticated } from "../storage.js";
+import Storage from "../storage.js";
+
+const storage = new Storage();
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props) => (
-    isAuthenticated() === true
+    storage.isAuthenticated() === true
       ? <Component {...props} />
       : <Redirect to='/login' />
   )} />

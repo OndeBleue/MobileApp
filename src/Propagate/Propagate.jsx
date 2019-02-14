@@ -5,7 +5,7 @@ import L from 'leaflet'
 import geolib from 'geolib';
 import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
-import { restoreId } from '../storage';
+import Storage from '../storage';
 import { createLocation, fetchPositions } from './actions';
 
 import settings from './settings.png';
@@ -41,11 +41,12 @@ class Propagate extends Component {
     super(props);
 
     const location = new Location();
+    const storage = new Storage();
     const last = location.last;
     const mapCenter = last ? [last.location.coords.latitude, last.location.coords.longitude]: [46.76, 2,64];
     const zoomLevel = last ? 14 : 5;
 
-    const userId = restoreId();
+    const userId = storage.id;
     
     this.state = {
       mapCenter,
@@ -54,6 +55,7 @@ class Propagate extends Component {
       hasZoomed: false,
       hasMoved: false,
       location,
+      storage,
       positionUpdater: undefined,
       positionFinder: undefined,
       nearMeUpdater: undefined,

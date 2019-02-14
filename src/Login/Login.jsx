@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withAlert } from 'react-alert';
 import { createUser, login } from './actions.js';
 import { apiLogger } from "../logger.js";
-import { storeUser, isAuthenticated } from "../storage.js";
+import Storage from "../storage.js";
 
 
 import logo from './logo.png';
@@ -12,15 +12,18 @@ import "./Login.css";
 class Login extends Component {
   constructor(props) {
     super(props);
+
+    const storage = new Storage();
     this.state = {
       name: '',
       identifier: '',
-      tries: 0
+      tries: 0,
+      storage
     };
   }
   
   componentDidMount() {
-    if (isAuthenticated()) {
+    if (this.state.storage.isAuthenticated()) {
       this.props.history.push('/propagate');
     }
   }
@@ -30,7 +33,7 @@ class Login extends Component {
     try {
       const response = await createUser(this.state.name);
       apiLogger.info(response);
-      storeUser(response.data);
+      this.state.storage.storeUser(response.data);
 
       this.props.alert.success(`Bienvenue ${this.state.name} !`);
       this.props.history.push('/propagate');
@@ -45,7 +48,7 @@ class Login extends Component {
     try {
       const response = await login(this.state.identifier);
       apiLogger.info(response);
-      storeUser(response.data);
+      this.state.storage.storeUser(response.data);
       
       this.props.alert.success(`De retour, ${response.data.name} !`);
       this.props.history.push('/propagate');

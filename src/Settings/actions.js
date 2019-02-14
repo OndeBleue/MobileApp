@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { API_URL } from '../config.js';
-import { restoreIdentifier } from '../storage';
+import Storage from '../storage';
+
+const storage = new Storage();
 
 export function getCurrentUser() {
-  const identifier = restoreIdentifier();
+  const identifier = storage.identifier;
   const b64 = btoa(`${identifier}:password`);
 
   return axios.get(`${API_URL}/users/${identifier}`, {
@@ -12,7 +14,7 @@ export function getCurrentUser() {
 }
 
 export function updateUser(id, etag, name) {
-  const identifier = restoreIdentifier();
+  const identifier = storage.identifier;
   const b64 = btoa(`${identifier}:password`);
 
   return axios.patch(`${API_URL}/users/${id}`, {

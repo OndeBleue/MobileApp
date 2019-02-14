@@ -1,11 +1,13 @@
 import axios from 'axios';
 import moment from 'moment';
 import { API_URL } from '../config.js';
-import { restoreId, restoreToken } from '../storage';
+import Storage from '../storage';
+
+const storage = new Storage();
 
 export function createLocation(coordinates, datetime) {
-  const user = restoreId();
-  const token = restoreToken();
+  const user = storage.id;
+  const token = storage.token;
   return axios.post(`${API_URL}/locations`, {
     user,
     coordinates: {
@@ -24,7 +26,7 @@ export function createLocation(coordinates, datetime) {
 export function fetchPositions(coordinates, distance) {
   const startDate = moment().utc().startOf('day').toDate();
   const endDate = moment(startDate).utc().add(1, 'day').toDate();
-  const token = restoreToken();
+  const token = storage.token;
   return axios.get(`${API_URL}/people-around?aggregate={"$center": [${coordinates}], "$distance": ${distance}, ` +
                    `"$startdate": "${startDate.toUTCString()}", "$enddate": "${endDate.toUTCString()}"}`, {
     headers: {
