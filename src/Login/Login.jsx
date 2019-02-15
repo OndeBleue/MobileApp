@@ -4,26 +4,25 @@ import { createUser, login } from './actions.js';
 import { apiLogger } from "../logger.js";
 import Storage from "../storage.js";
 
-
 import logo from './logo.png';
 
 import "./Login.css";
+
+const storage = new Storage();
 
 class Login extends Component {
   constructor(props) {
     super(props);
 
-    const storage = new Storage();
     this.state = {
       name: '',
       identifier: '',
       tries: 0,
-      storage
     };
   }
   
   componentDidMount() {
-    if (this.state.storage.isAuthenticated()) {
+    if (storage.isAuthenticated()) {
       this.props.history.push('/propagate');
     }
   }
@@ -33,7 +32,7 @@ class Login extends Component {
     try {
       const response = await createUser(this.state.name);
       apiLogger.info(response);
-      this.state.storage.storeUser(response.data);
+      storage.storeUser(response.data);
 
       this.props.alert.success(`Bienvenue ${this.state.name} !`);
       this.props.history.push('/propagate');
@@ -48,7 +47,7 @@ class Login extends Component {
     try {
       const response = await login(this.state.identifier);
       apiLogger.info(response);
-      this.state.storage.storeUser(response.data);
+      storage.storeUser(response.data);
       
       this.props.alert.success(`De retour, ${response.data.name} !`);
       this.props.history.push('/propagate');

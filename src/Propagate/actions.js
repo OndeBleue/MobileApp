@@ -2,6 +2,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { API_URL } from '../config.js';
 import Storage from '../storage';
+import { makeCancelable } from '../utils';
 
 const storage = new Storage();
 
@@ -27,10 +28,10 @@ export function fetchPositions(coordinates, distance) {
   const startDate = moment().utc().startOf('day').toDate();
   const endDate = moment(startDate).utc().add(1, 'day').toDate();
   const token = storage.token;
-  return axios.get(`${API_URL}/people-around?aggregate={"$center": [${coordinates}], "$distance": ${distance}, ` +
+  return makeCancelable(axios.get(`${API_URL}/people-around?aggregate={"$center": [${coordinates}], "$distance": ${distance}, ` +
                    `"$startdate": "${startDate.toUTCString()}", "$enddate": "${endDate.toUTCString()}"}`, {
     headers: {
       'Authorization': `Token ${token}`,
     },
-  });
+  }));
 }

@@ -10,33 +10,34 @@ import arrowBack from './arrow_back.png';
 
 import "./Settings.css";
 
+const storage = new Storage();
+
 class Settings extends Component {
   constructor(props) {
     super(props);
-
-    const storage = new Storage();
 
     this.state = {
       userId: undefined,
       etag: undefined,
       name: '',
-      storage,
     }
   }
 
   componentDidMount() {
     getCurrentUser().then((response) => {
       const user = response.data;
-      this.setState( {
-        userId: user._id,
-        etag: user._etag,
-        name: user.name
-      });
+      if (user._id === storage.id) {
+        this.setState({
+          userId: user._id,
+          etag: user._etag,
+          name: user.name
+        });
+      }
     });
   }
 
   handleDisconnect = () => {
-    this.state.storage.disconnect();
+    storage.disconnect();
     this.props.history.push('/login');
   };
 
@@ -76,7 +77,7 @@ class Settings extends Component {
         </form>
         <form className="form profile-form">
           <label htmlFor="identifier">Mon identifiant :</label>
-          <input value={this.state.storage.identifier} readOnly />
+          <input value={storage.identifier} readOnly />
         </form>
       </div>
     );

@@ -37,14 +37,15 @@ const FIND_POSITION = 1000;
 const FIND_NEAR_ME = 61000;
 const REFRESH_POSITION = 60000;
 
+const location = new Location();
+const storage = new Storage();
+
 moment.locale('fr');
 
 class Propagate extends Component {
   constructor(props) {
     super(props);
 
-    const location = new Location();
-    const storage = new Storage();
     const last = location.last;
     const mapCenter = last ? [last.location.coords.latitude, last.location.coords.longitude]: [46.76, 2,64];
     const zoomLevel = last ? 14 : 5;
@@ -57,8 +58,6 @@ class Propagate extends Component {
       isPropagating: storage.isPropagating,
       hasZoomed: false,
       hasMoved: false,
-      location,
-      storage,
       positionUpdater: undefined,
       positionFinder: undefined,
       nearMeUpdater: undefined,
@@ -71,14 +70,17 @@ class Propagate extends Component {
   }
 
   componentDidMount() {
-    this.state.location.watchLocation();
+    location.watchLocation();
     this.setState({
       positionFinder: setInterval(this.initMapPosition, FIND_POSITION),
     });
   }
 
   componentWillUnmount() {
-    this.state.location.stopWatching();
+    location.stopWatching();
+    if (storage.fetcher) {
+      storage.fetcher.cancel();
+    }
     if (this.state.positionFinder) {
       clearInterval(this.state.positionFinder);
     }
@@ -91,7 +93,7 @@ class Propagate extends Component {
   }
 
   handleIAmHere = async () => {
-    this.state.storage.isPropagating = true;
+    storage.isPropagating = true;
     this.setState({
       isPropagating: true,
     }, this.pushPosition);
@@ -123,7 +125,7 @@ class Propagate extends Component {
   };
 
   showGpsStatusMessage = ()=> {
-    const error = this.state.location.error;
+    const error = location.error;
     if (error) {
       uiLogger.error(error);
       return this.props.alert.error(Location.handleLocationError(error));
@@ -162,7 +164,7 @@ class Propagate extends Component {
   };
 
   pushPosition = () => {
-    const position = this.state.location.last;
+    const position = location.last;
     if (position) {
       const coordinates = [position.location.coords.latitude, position.location.coords.longitude];
       if (this.state.isPropagating) {
@@ -177,13 +179,13 @@ class Propagate extends Component {
   };
 
   updatePosition = (callback) => {
-    const position = this.state.location.last;
+    const position = location.last;
     if (position) {
       const mapCenter = this.state.hasMoved ? this.state.mapCenter : [position.location.coords.latitude, position.location.coords.longitude];
       const zoomLevel = this.state.hasZoomed ? this.state.zoomLevel : 14;
       this.setState({
         mapCenter,
-        gpsStatus: this.gpsStatus(position, this.state.location.error),
+        gpsStatus: this.gpsStatus(position, location.error),
         zoomLevel,
       }, callback);
       this.pushPosition();
@@ -191,13 +193,16 @@ class Propagate extends Component {
   };
 
   updateNearMe = () => {
-    fetchPositions(this.state.mapCenter, this.mapRadius()).then((positions) => {
+    if (storage.fetcher) storage.fetcher.cancel();
+
+    storage.fetcher = fetchPositions(this.state.mapCenter, this.mapRadius());
+    storage.fetcher.promise.then((positions) => {
       this.setState({
         people: positions.data._items,
       });
       apiLogger.info(positions);
-    }).catch((error) => {
-      apiLogger.error(error);
+    }).catch((reason) => {
+      if (!reason.isCanceled) apiLogger.error(reason);
     });
   };
 
