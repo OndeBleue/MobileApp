@@ -4,6 +4,7 @@ import 'typeface-alegreya';
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App.jsx";
+import { uiLogger } from "./logger";
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -24,6 +25,10 @@ if (!window.location.origin) {
 // webpack plugin for service worker generation
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('dist/service-worker.js', { scope: '/' });
+    navigator.serviceWorker.register('dist/service-worker.js', { scope: '/' })
+             .then(registration => uiLogger.info('Registered service worker', registration))
+             .catch(error => uiLogger.error('Failed to register service worker', error));
   });
+} else {
+  uiLogger.error('Web browser does not support service workers');
 }
