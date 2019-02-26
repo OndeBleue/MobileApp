@@ -37,10 +37,24 @@
   height: 100%;
 }
 
+@keyframes fall-down {
+  0% {
+    top: -50px;
+  }
+
+  100% {
+    top: 50px;
+  }
+}
+
+
 .propagate .buttons-bar {
   text-align: center;
-  margin-top: -1.5em;
   z-index: 1800;
+  position: fixed;
+  width: 100%;
+  top: 50px;
+  animation: fall-down 0.5s ease;
 }
 
 .propagate .buttons-bar button {
@@ -48,8 +62,9 @@
   padding: 0.8em 10%;
   border-radius: 4px;
   border: 0;
-  background-color: #bbdfe5;
-  color: black;
+  background-color: #00938B;
+  color: white;
+  font-weight: bold;
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
 }
 
