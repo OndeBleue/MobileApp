@@ -21,16 +21,16 @@ import "./Propagate.css";
 
 export const peopleIcon = new L.Icon({
   iconUrl: people,
-  iconAnchor: [12, 27],
-  iconSize: [25, 27],
-  popupAnchor: [0, -27]
+  iconAnchor: [8, 18],
+  iconSize: [16, 18],
+  popupAnchor: [0, -18]
 });
 
 export const meIcon = new L.Icon({
   iconUrl: me,
-  iconAnchor: [12, 12],
-  iconSize: [25, 25],
-  popupAnchor: [1, -12]
+  iconAnchor: [8, 8],
+  iconSize: [16, 16],
+  popupAnchor: [1, -8]
 });
 
 const FIND_POSITION = 1000;
@@ -132,10 +132,16 @@ class Propagate extends Component {
     }
   };
 
+  gpsStatusIcon = (status) => {
+    if (status === 'searching') return gpsNotFixed;
+    if (status === 'ok') return gpsFixed;
+    if (status === 'off') return gpsOff;
+  };
+
   gpsStatus = (position, error) => {
-    if (!position && !error) return gpsNotFixed;
-    if (position && !error) return gpsFixed;
-    if (!position && error) return gpsOff;
+    if (!position && !error) return 'searching';
+    if (position && !error) return 'ok';
+    if (!position && error) return 'off';
   };
 
 
@@ -226,7 +232,7 @@ class Propagate extends Component {
     return (
       <div className="propagate">
         <div className="toolbar">
-          <img src={gpsStatus} alt="GPS status" onClick={this.showGpsStatusMessage}/>
+          <img src={this.gpsStatusIcon(gpsStatus)} className={`gps-${gpsStatus}`} alt="GPS status" onClick={this.showGpsStatusMessage}/>
           <img src={settings} alt="settings" onClick={this.navigateToSettings} />
         </div>
         {!isPropagating && !positionFinder &&
