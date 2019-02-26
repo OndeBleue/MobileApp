@@ -124,7 +124,19 @@ class Propagate extends Component {
     this.props.history.push('/settings');
   };
 
-  showGpsStatusMessage = ()=> {
+  handleClickGPS = () => {
+    if (this.state.gpsStatus === 'ok') {
+      const position = location.last;
+      if (position) {
+        this.setState({
+          mapCenter: [position.location.coords.latitude, position.location.coords.longitude]
+        });
+      }
+    }
+    this.showGpsStatusMessage();
+  };
+
+  showGpsStatusMessage = () => {
     const error = location.error;
     if (error) {
       uiLogger.error(error);
@@ -152,7 +164,7 @@ class Propagate extends Component {
       return geolib.getDistanceSimple(
         { latitude: this.state.mapCenter[0], longitude: this.state.mapCenter[1] },
         { latitude: bounds._northEast.lat, longitude: bounds._northEast.lng }
-      );
+      ) * 1.1;
     }
     return 100;
   };
@@ -232,7 +244,7 @@ class Propagate extends Component {
     return (
       <div className="propagate">
         <div className="toolbar">
-          <img src={this.gpsStatusIcon(gpsStatus)} className={`gps-${gpsStatus}`} alt="GPS status" onClick={this.showGpsStatusMessage}/>
+          <img src={this.gpsStatusIcon(gpsStatus)} className={`gps-${gpsStatus}`} alt="GPS status" onClick={this.handleClickGPS}/>
           <img src={settings} alt="settings" onClick={this.navigateToSettings} />
         </div>
         {!isPropagating && !positionFinder &&
