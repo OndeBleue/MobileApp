@@ -21,6 +21,6 @@
   "description": "Partagez votre position pendant l'onde bleue. Prenez rendez-vous pour dimanche prochain.",
   "display": "standalone",
   "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "background_color": "#ffffff"
 }
  
