@@ -49,10 +49,11 @@
 
 
 .propagate .buttons-bar {
-  text-align: center;
+  text-align: left;
   z-index: 1800;
   position: fixed;
-  width: 100%;
+  width: 62%;
+  right: 0;
   top: 50px;
   animation: fall-down 0.5s ease;
 }
