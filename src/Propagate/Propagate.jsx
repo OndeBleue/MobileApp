@@ -15,6 +15,7 @@ import people from './people.png';
 import gpsFixed from './gps_fixed.png';
 import gpsNotFixed from './gps_not_fixed.png';
 import gpsOff from './gps_off.png';
+import loader from './loader.svg';
 
 import 'leaflet/dist/leaflet.css';
 import "./Propagate.css";
@@ -64,6 +65,7 @@ class Propagate extends Component {
       gpsStatus: this.gpsStatus(last, location.error),
       people: [],
       userId,
+      loading: false,
     };
 
     this.mapRef = React.createRef();
@@ -211,16 +213,22 @@ class Propagate extends Component {
   };
 
   updateNearMe = () => {
-    if (storage.fetcher) storage.fetcher.cancel();
+    this.setState({
+      loading: true,
+    }, () => {
+      if (storage.fetcher) storage.fetcher.cancel();
 
-    storage.fetcher = fetchPositions(this.state.mapCenter, this.mapRadius());
-    storage.fetcher.promise.then((positions) => {
-      this.setState({
-        people: positions.data._items,
+      storage.fetcher = fetchPositions(this.state.mapCenter, this.mapRadius());
+      storage.fetcher.promise.then((positions) => {
+        this.setState({
+          loading: false,
+          people: positions.data._items,
+        });
+        apiLogger.info(positions);
+      }).catch((reason) => {
+        if (!reason.isCanceled) apiLogger.error(reason);
+        this.setState({ loading: false });
       });
-      apiLogger.info(positions);
-    }).catch((reason) => {
-      if (!reason.isCanceled) apiLogger.error(reason);
     });
   };
 
@@ -240,7 +248,7 @@ class Propagate extends Component {
   }
 
   render() {
-    const { isPropagating, gpsStatus, mapCenter, zoomLevel, positionFinder } = this.state;
+    const { isPropagating, gpsStatus, mapCenter, zoomLevel, positionFinder, loading } = this.state;
     return (
       <div className="propagate">
         <div className="toolbar">
@@ -252,6 +260,7 @@ class Propagate extends Component {
             <button onClick={this.handleIAmHere}>Je suis là !</button>
           </div>
         }
+        {loading && <img src={loader} alt="loading" className="loader" />}
         <div className="map-container">
           <Map center={mapCenter}
                zoom={zoomLevel}
