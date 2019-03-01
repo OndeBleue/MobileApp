@@ -16,8 +16,6 @@ export default class Storage {
     this.identifierData = undefined;
     this.tokenData = undefined;
     this.idData = undefined;
-    this.isPropagatingData = false;
-    this.fetcherData = undefined;
   }
 
   get identifier() {
@@ -47,22 +45,6 @@ export default class Storage {
     return value;
   }
 
-  get isPropagating() {
-    return this.isPropagatingData;
-  }
-
-  set isPropagating(value) {
-    this.isPropagatingData = value;
-  }
-
-  get fetcher() {
-    return this.fetcherData;
-  }
-
-  set fetcher(value) {
-    this.fetcherData = value;
-  }
-
   storeUser(user) {
     this.identifierData = user.identifier;
     this.tokenData = user.token;
@@ -83,6 +65,5 @@ export default class Storage {
     this.identifierData = undefined;
     this.tokenData = undefined;
     this.idData = undefined;
-    this.isPropagatingData = false;
   }
 }

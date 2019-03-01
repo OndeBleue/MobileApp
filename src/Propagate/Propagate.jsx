@@ -7,6 +7,7 @@ import moment from 'moment';
 import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import Storage from '../storage';
+import Memory from '../memory';
 import { createLocation, fetchPositions, countConnectedUsers } from './actions';
 
 import settings from './settings.png';
@@ -34,13 +35,31 @@ export const meIcon = new L.Icon({
   popupAnchor: [1, -8]
 });
 
+// when the component is mounted first, we will refresh every seconds until a first position is found
 const FIND_POSITION = 1000;
+const POSITION_FINDER = 'POSITION_FINDER'; // setInterval
+const POSITION_FETCHER = 'POSITION_FETCHER'; // API call 
+// refresh people around the current view, every 61 seconds
 const FIND_NEAR_ME = 61000;
+const NEAR_ME_UPDATER = 'NEAR_ME_UPDATER'; // setInterval
+// send my position to the server every 60 seconds
 const REFRESH_POSITION = 60000;
+const POSITION_UPDATER = 'POSITION_UPDATER'; // setInterval
+// refresh how many people are connected in the whole app, every 10 seconds
 const REFRESH_COUNT = 10000;
+const COUNT_UPDATER = 'COUNT_UPDATER'; // setInterval
+const COUNT_FETCHER = 'COUNT_FETCHER'; // API call
+// will persist the current status of the user during the session (is sending position or not)
+const IS_PROPAGATING = 'IS_PROPAGATING';
+
+// GPS statuses
+const GPS_SEARCHING = 'GPS_SEARCHING';
+const GPS_OK = 'GPS_OK';
+const GPS_OFF = 'GPS_OFF';
 
 const location = new Location();
 const storage = new Storage();
+const memory = new Memory();
 
 moment.locale('fr');
 
@@ -57,13 +76,9 @@ class Propagate extends Component {
     this.state = {
       mapCenter,
       zoomLevel,
-      isPropagating: storage.isPropagating,
+      isPropagating: memory.get(IS_PROPAGATING) || false,
       hasZoomed: false,
       hasMoved: false,
-      positionUpdater: undefined,
-      positionFinder: undefined,
-      nearMeUpdater: undefined,
-      countUpdater: undefined,
       gpsStatus: this.gpsStatus(last, location.error),
       people: [],
       userId,
@@ -76,30 +91,40 @@ class Propagate extends Component {
 
   componentDidMount() {
     location.watchLocation();
-    this.setState({
-      positionFinder: setInterval(this.initMapPosition, FIND_POSITION),
-      countUpdater: setInterval(this.updateConnectedUsers, REFRESH_COUNT),
-    });
+    this.updateConnectedUsers();
+    memory.set(POSITION_FINDER, setInterval(this.initMapPosition, FIND_POSITION));
+    memory.set(COUNT_UPDATER, setInterval(this.updateConnectedUsers, REFRESH_COUNT));
   }
 
   componentWillUnmount() {
+    // stop gps sensor
     location.stopWatching();
-    if (storage.fetcher) {
-      storage.fetcher.cancel();
+    // cancel any currently running API call
+    if (memory.get(POSITION_FETCHER)) {
+      memory.get(POSITION_FETCHER).cancel();
+      memory.remove(POSITION_FETCHER);
     }
-    if (this.state.positionFinder) {
-      clearInterval(this.state.positionFinder);
+    if (memory.get(COUNT_FETCHER)) {
+      memory.get(COUNT_FETCHER).cancel();
+      memory.remove(COUNT_FETCHER);
     }
-    if (this.state.positionUpdater) {
-      clearInterval(this.state.positionUpdater);
+    // stop setInterval updaters
+    if (memory.get(POSITION_FINDER)) {
+      clearInterval(memory.get(POSITION_FINDER));
+      memory.remove(POSITION_FINDER);
     }
-    if (this.state.nearMeUpdater) {
-      clearInterval(this.state.nearMeUpdater);
+    if (memory.get(POSITION_UPDATER)) {
+      clearInterval(memory.get(POSITION_UPDATER));
+      memory.remove(POSITION_UPDATER);
+    }
+    if (memory.get(NEAR_ME_UPDATER)) {
+      clearInterval(memory.get(NEAR_ME_UPDATER));
+      memory.remove(NEAR_ME_UPDATER);
     }
   }
 
   handleIAmHere = async () => {
-    storage.isPropagating = true;
+    memory.set(IS_PROPAGATING, true);
     this.setState({
       isPropagating: true,
     }, this.pushPosition);
@@ -131,7 +156,7 @@ class Propagate extends Component {
   };
 
   handleClickGPS = () => {
-    if (this.state.gpsStatus === 'ok') {
+    if (this.state.gpsStatus === GPS_OK) {
       const position = location.last;
       if (position) {
         this.setState({
@@ -139,7 +164,11 @@ class Propagate extends Component {
         });
       }
     }
-    this.showGpsStatusMessage();
+    else if (this.state.gpsStatus === GPS_SEARCHING) {
+      this.props.alert.info('Recherche de la position ...');
+    } else {
+      this.showGpsStatusMessage();
+    }
   };
 
   showGpsStatusMessage = () => {
@@ -151,15 +180,15 @@ class Propagate extends Component {
   };
 
   gpsStatusIcon = (status) => {
-    if (status === 'searching') return gpsNotFixed;
-    if (status === 'ok') return gpsFixed;
-    if (status === 'off') return gpsOff;
+    if (status === GPS_SEARCHING) return gpsNotFixed;
+    if (status === GPS_OK) return gpsFixed;
+    if (status === GPS_OFF) return gpsOff;
   };
 
   gpsStatus = (position, error) => {
-    if (!position && !error) return 'searching';
-    if (position && !error) return 'ok';
-    if (!position && error) return 'off';
+    if (!position && !error) return GPS_SEARCHING;
+    if (position && !error) return GPS_OK;
+    if (!position && error) return GPS_OFF;
   };
 
 
@@ -169,7 +198,8 @@ class Propagate extends Component {
       const bounds = map.leafletElement.getBounds();
       return geolib.getDistanceSimple(
         { latitude: this.state.mapCenter[0], longitude: this.state.mapCenter[1] },
-        { latitude: bounds._northEast.lat, longitude: bounds._northEast.lng }
+        { latitude: bounds._northEast.lat, longitude: bounds._northEast.lng },
+        1
       ) * 1.1;
     }
     return 100;
@@ -177,13 +207,11 @@ class Propagate extends Component {
 
   initMapPosition = () => {
     this.updatePosition(() => {
-      clearInterval(this.state.positionFinder);
+      clearInterval(memory.get(POSITION_FINDER));
+      memory.remove(POSITION_FINDER);
       this.updateNearMe();
-      this.setState({
-        positionFinder: undefined,
-        positionUpdater: setInterval(this.updatePosition, REFRESH_POSITION),
-        nearMeUpdater: setInterval(this.updateNearMe, FIND_NEAR_ME),
-      })
+      memory.set(POSITION_UPDATER, setInterval(this.updatePosition, REFRESH_POSITION));
+      memory.set(NEAR_ME_UPDATER, setInterval(this.updateNearMe, FIND_NEAR_ME));
     });
   };
 
@@ -220,10 +248,10 @@ class Propagate extends Component {
     this.setState({
       loading: true,
     }, () => {
-      if (storage.fetcher) storage.fetcher.cancel();
+      if (memory.get(POSITION_FETCHER)) memory.get(POSITION_FETCHER).cancel();
 
-      storage.fetcher = fetchPositions(this.state.mapCenter, this.mapRadius());
-      storage.fetcher.promise.then((positions) => {
+      memory.set(POSITION_FETCHER, fetchPositions(this.state.mapCenter, this.mapRadius()));
+      memory.get(POSITION_FETCHER).promise.then((positions) => {
         this.setState({
           loading: false,
           people: positions.data._items,
@@ -237,7 +265,10 @@ class Propagate extends Component {
   };
 
   updateConnectedUsers = () => {
-    countConnectedUsers().promise.then((res) => {
+    if (memory.get(COUNT_FETCHER)) memory.get(COUNT_FETCHER).cancel();
+
+    memory.set(COUNT_FETCHER, countConnectedUsers());
+    memory.get(COUNT_FETCHER).promise.then((res) => {
       if (Array.isArray(res.data._items) && res.data._items.length > 0) {
         this.setState({ count: res.data._items[0].connected_users });
       }
