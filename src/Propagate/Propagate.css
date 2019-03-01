@@ -92,12 +92,23 @@
   animation: fade-up 0.5s ease;
 }
 
-
 .propagate .loader {
   position: absolute;
   top: 45%;
   left: 45%;
   height: 10%;
   width: 10%;
+  z-index: 1200;
+}
+
+.propagate .connected-users {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: #00938B;
+  color: white;
+  font-weight: bold;
+  padding: 2px 15px;
+  border-top-right-radius: 4px;
   z-index: 1200;
 }

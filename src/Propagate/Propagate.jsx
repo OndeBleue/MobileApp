@@ -7,7 +7,7 @@ import moment from 'moment';
 import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import Storage from '../storage';
-import { createLocation, fetchPositions } from './actions';
+import { createLocation, fetchPositions, countConnectedUsers } from './actions';
 
 import settings from './settings.png';
 import me from './me.png';
@@ -37,6 +37,7 @@ export const meIcon = new L.Icon({
 const FIND_POSITION = 1000;
 const FIND_NEAR_ME = 61000;
 const REFRESH_POSITION = 60000;
+const REFRESH_COUNT = 10000;
 
 const location = new Location();
 const storage = new Storage();
@@ -62,10 +63,12 @@ class Propagate extends Component {
       positionUpdater: undefined,
       positionFinder: undefined,
       nearMeUpdater: undefined,
+      countUpdater: undefined,
       gpsStatus: this.gpsStatus(last, location.error),
       people: [],
       userId,
       loading: false,
+      count: 0,
     };
 
     this.mapRef = React.createRef();
@@ -75,6 +78,7 @@ class Propagate extends Component {
     location.watchLocation();
     this.setState({
       positionFinder: setInterval(this.initMapPosition, FIND_POSITION),
+      countUpdater: setInterval(this.updateConnectedUsers, REFRESH_COUNT),
     });
   }
 
@@ -232,6 +236,16 @@ class Propagate extends Component {
     });
   };
 
+  updateConnectedUsers = () => {
+    countConnectedUsers().promise.then((res) => {
+      if (Array.isArray(res.data._items) && res.data._items.length > 0) {
+        this.setState({ count: res.data._items[0].connected_users });
+      }
+    }).catch((reason) => {
+      if (!reason.isCanceled) apiLogger.error(reason);
+    })
+  };
+
   renderMarkers() {
     return this.state.people.map(p => {
       const itsMe = (p.user === this.state.userId);
@@ -248,7 +262,7 @@ class Propagate extends Component {
   }
 
   render() {
-    const { isPropagating, gpsStatus, mapCenter, zoomLevel, positionFinder, loading } = this.state;
+    const { isPropagating, gpsStatus, mapCenter, zoomLevel, positionFinder, loading, count } = this.state;
     return (
       <div className="propagate">
         <div className="toolbar">
@@ -277,6 +291,7 @@ class Propagate extends Component {
             {this.renderMarkers()}
           </Map>
         </div>
+        <div className="connected-users">Connectés : {count}</div>
       </div>
     );
   }

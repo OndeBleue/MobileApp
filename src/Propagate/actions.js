@@ -35,3 +35,15 @@ export function fetchPositions(coordinates, distance) {
     },
   }));
 }
+
+export function countConnectedUsers() {
+  const startDate = moment().utc().startOf('day').toDate();
+  const endDate = moment(startDate).utc().add(1, 'day').toDate();
+  const token = storage.token;
+  return makeCancelable(axios.get(`${API_URL}/count?aggregate={"$startdate": "${startDate.toUTCString()}", ` +
+    `"$enddate": "${endDate.toUTCString()}"}`, {
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  }));
+}
