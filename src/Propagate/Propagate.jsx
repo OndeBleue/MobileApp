@@ -196,11 +196,10 @@ class Propagate extends Component {
     const map = this.mapRef.current;
     if (map != null) {
       const bounds = map.leafletElement.getBounds();
-      return geolib.getDistanceSimple(
+      return parseInt(geolib.getDistanceSimple(
         { latitude: this.state.mapCenter[0], longitude: this.state.mapCenter[1] },
-        { latitude: bounds._northEast.lat, longitude: bounds._northEast.lng },
-        1
-      ) * 1.1;
+        { latitude: bounds._northEast.lat, longitude: bounds._northEast.lng }
+      ) * 1.1, 10);
     }
     return 100;
   };
