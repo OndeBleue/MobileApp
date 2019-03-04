@@ -40,8 +40,13 @@
   font-weight: bold;
 }
 
+.react-confirm-alert {
+  max-width: 400px;
+}
+
 .react-confirm-alert .react-confirm-alert-body {
   font-family: 'News Cycle', sans-serif;
+  width: inherit;
 }
 
 .react-confirm-alert .react-confirm-alert-button-group button {
