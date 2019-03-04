@@ -1,0 +1,54 @@
+.welcome {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  background: url("background.png");
+  background-size: cover;
+  color: white;
+}
+
+.welcome .overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(36,55,74,.97);
+}
+
+.welcome p {
+  margin-top: 2em;
+}
+
+.welcome .identifier {
+  color: #00938B;
+  font-weight: bold;
+  font-size: 14pt;
+}
+
+.welcome .settings-icon {
+  margin: 0 4px;
+}
+
+.welcome .continue {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  font-weight: bold;
+  font-size: 14pt;
+  cursor: pointer;
+}
+
+.welcome .continue:hover {
+  -webkit-filter: saturate(4);
+  filter: saturate(4);
+}
+
+.welcome .continue img {
+  height: 30px;
+  vertical-align: text-top;
+  margin-left: 10px;
+}

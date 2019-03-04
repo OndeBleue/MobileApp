@@ -35,7 +35,7 @@ class Login extends Component {
       storage.storeUser(response.data);
 
       this.props.alert.success(`Bienvenue ${this.state.name} !`);
-      this.props.history.push('/propagate');
+      this.props.history.push('/welcome');
     } catch (error) {
       apiLogger.error(error);
       this.props.alert.error(`Impossible de créer le compte.`);
