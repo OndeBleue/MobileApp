@@ -121,6 +121,10 @@ class Propagate extends Component {
       clearInterval(memory.get(NEAR_ME_UPDATER));
       memory.remove(NEAR_ME_UPDATER);
     }
+    if (memory.get(COUNT_UPDATER)) {
+      clearInterval(memory.get(COUNT_UPDATER));
+      memory.remove(COUNT_UPDATER);
+    }
   }
 
   handleIAmHere = async () => {
