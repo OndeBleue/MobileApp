@@ -1,0 +1,17 @@
+.page404 {
+  text-align: center;
+  margin-top: 45%;
+}
+
+.page404 h1 {
+  color: #00938B;
+}
+
+.page404 p {
+  font-style: italic;
+}
+
+.page404 img {
+  width: 100px;
+  cursor: pointer;
+}
