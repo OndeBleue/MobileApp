@@ -40,6 +40,13 @@
   font-weight: bold;
 }
 
+.settings .delete-account {
+  margin: 5em auto 2em auto;
+  text-align: center;
+  color: gray;
+  cursor: pointer;
+}
+
 .react-confirm-alert {
   max-width: 400px;
 }

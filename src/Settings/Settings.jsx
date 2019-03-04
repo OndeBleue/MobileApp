@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withAlert } from 'react-alert';
 import { confirmAlert } from 'react-confirm-alert';
-import { getCurrentUser, updateUser } from './actions';
+import { getCurrentUser, updateUser, deleteUser } from './actions';
 import Storage from '../storage';
 import { apiLogger } from '../logger.js';
 
@@ -57,6 +57,32 @@ class Settings extends Component {
     });
   };
 
+  handleDeleteAccount = () => {
+    confirmAlert({
+      title: 'Supprimer mon compte',
+      message: "Êtes-vous sur de vouloir vous supprimer votre compte ? Cela supprimera tout l'historique de vos positions. Cette action est irréversible !",
+      buttons: [
+        {
+          label: 'Oui',
+          onClick: async () => {
+            try {
+              await deleteUser(this.state.userId, this.state.etag);
+              storage.disconnect();
+              this.props.history.push('/login');
+              this.props.alert.success(`Au revoir ${this.state.name}. Vous allez nous manquer !`);
+            } catch (e) {
+              apiLogger.error(e);
+              this.props.alert.error('Impossible de supprimer votre compte');
+            }
+          }
+        },
+        {
+          label: 'Non',
+        }
+      ]
+    });
+  };
+
   handleBackToMap = () => {
     this.props.history.push('/propagate');
   };
@@ -95,6 +121,9 @@ class Settings extends Component {
           <label htmlFor="identifier">Mon identifiant :</label>
           <input value={storage.identifier} readOnly />
         </form>
+        <div onClick={this.handleDeleteAccount} className="delete-account">
+          Supprimer mon compte
+        </div>
       </div>
     );
   }

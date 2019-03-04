@@ -27,3 +27,15 @@ export function updateUser(id, etag, name) {
     },
   });
 }
+
+export function deleteUser(id, etag) {
+  const identifier = storage.identifier;
+  const b64 = btoa(`${identifier}:password`);
+
+  return axios.delete(`${API_URL}/users/${id}`, {
+    headers: {
+      'Authorization': `Basic ${b64}`,
+      'If-Match': etag,
+    },
+  });
+}
