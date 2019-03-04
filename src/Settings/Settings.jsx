@@ -1,14 +1,16 @@
-import React, { Component } from "react";
-import { withAlert } from "react-alert";
-import Storage from "../storage";
+import React, { Component } from 'react';
+import { withAlert } from 'react-alert';
+import { confirmAlert } from 'react-confirm-alert';
 import { getCurrentUser, updateUser } from './actions';
-import { apiLogger } from "../logger.js";
+import Storage from '../storage';
+import { apiLogger } from '../logger.js';
 
-import logo from "./logo.png";
-import signOut from "./sign-out.png";
+import logo from './logo.png';
+import signOut from './sign-out.png';
 import arrowBack from './arrow_back.png';
 
-import "./Settings.css";
+import './Settings.css';
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 const storage = new Storage();
 
@@ -37,8 +39,22 @@ class Settings extends Component {
   }
 
   handleDisconnect = () => {
-    storage.disconnect();
-    this.props.history.push('/login');
+    confirmAlert({
+      title: 'Se déconnecter',
+      message: 'Êtes-vous sur de vouloir vous déconnecter ? Avez-vous bien noté votre identifiant avant ?',
+      buttons: [
+        {
+          label: 'Oui',
+          onClick: () => {
+            storage.disconnect();
+            this.props.history.push('/login');
+          }
+        },
+        {
+          label: 'Non',
+        }
+      ]
+    });
   };
 
   handleBackToMap = () => {

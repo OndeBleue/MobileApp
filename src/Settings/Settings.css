@@ -39,3 +39,13 @@
   color: white;
   font-weight: bold;
 }
+
+.react-confirm-alert .react-confirm-alert-body {
+  font-family: 'News Cycle', sans-serif;
+}
+
+.react-confirm-alert .react-confirm-alert-button-group button {
+  background-color: #00938B;
+  border-radius: 4px;
+  font-weight: bold;
+}
