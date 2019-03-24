@@ -4,6 +4,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import { getCurrentUser, updateUser, deleteUser } from './actions';
 import Storage from '../storage';
 import { apiLogger } from '../logger.js';
+import { saveError } from '../ErrorBoundary/actions';
 
 import logo from './logo.png';
 import signOut from './sign-out.png';
@@ -72,6 +73,7 @@ class Settings extends Component {
               this.props.alert.success(`Au revoir ${this.state.name}. Vous allez nous manquer !`);
             } catch (e) {
               apiLogger.error(e);
+              saveError(e);
               this.props.alert.error('Impossible de supprimer votre compte');
             }
           }
@@ -96,6 +98,7 @@ class Settings extends Component {
       this.props.alert.success(`Votre nom a été mis à jour !`);
     } catch(error) {
       apiLogger.error(error);
+      saveError(error);
       this.props.alert.error(`Impossible de mettre à jour votre nom`);
     }
   };

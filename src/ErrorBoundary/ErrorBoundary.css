@@ -1,0 +1,10 @@
+.error-icon {
+  position: fixed;
+  top: 16px;
+  right: 95px;
+  z-index: 50000;
+}
+
+.error-user-info a {
+  color: #4687ff;
+}

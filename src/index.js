@@ -5,6 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App.jsx";
 import { uiLogger } from "./logger";
+import { saveError } from "./ErrorBoundary/actions";
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -27,7 +28,10 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('dist/service-worker.js', { scope: '/' })
              .then(registration => uiLogger.info('Registered service worker', registration))
-             .catch(error => uiLogger.error('Failed to register service worker', error));
+             .catch(error => {
+               uiLogger.error('Failed to register service worker', error);
+               saveError(error);
+             });
   });
 } else {
   uiLogger.error('Web browser does not support service workers');

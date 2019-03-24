@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import { withAlert } from 'react-alert';
 import { createUser, login } from './actions.js';
 import { apiLogger } from "../logger.js";
-import Storage from "../storage.js";
+import Storage from '../storage.js';
+import { saveError } from '../ErrorBoundary/actions';
 
 import logo from './logo.png';
 
-import "./Login.css";
+import './Login.css';
 
 const storage = new Storage();
 
@@ -38,6 +39,7 @@ class Login extends Component {
       this.props.history.push('/welcome');
     } catch (error) {
       apiLogger.error(error);
+      saveError(error);
       this.props.alert.error(`Impossible de créer le compte.`);
     }
   };
@@ -53,6 +55,7 @@ class Login extends Component {
       this.props.history.push('/propagate');
     } catch (error) {
       apiLogger.error(error);
+      saveError(error);
       this.setState({ tries: this.state.tries + 1}, () => {
         if (error.message === 'Network Error' && this.state.tries >= 5) {
           this.props.alert.error(`Trop de tentatives infructueuses, vous pourrez réessayer dans 10 minutes.`);

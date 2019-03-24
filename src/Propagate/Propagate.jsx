@@ -9,6 +9,7 @@ import { uiLogger, apiLogger } from '../logger';
 import Storage from '../storage';
 import Memory from '../memory';
 import { createLocation, fetchPositions, countConnectedUsers } from './actions';
+import { saveError } from '../ErrorBoundary/actions';
 
 import settings from './settings.png';
 import me from './me.png';
@@ -19,7 +20,7 @@ import gpsOff from './gps_off.png';
 import loader from './loader.svg';
 
 import 'leaflet/dist/leaflet.css';
-import "./Propagate.css";
+import './Propagate.css';
 
 export const peopleIcon = new L.Icon({
   iconUrl: people,
@@ -228,6 +229,7 @@ class Propagate extends Component {
           this.updateNearMe();
         }).catch((e) => {
           apiLogger.error(e);
+          saveError(e);
         })
       }
     }
@@ -261,7 +263,10 @@ class Propagate extends Component {
         });
         apiLogger.info(positions);
       }).catch((reason) => {
-        if (!reason.isCanceled) apiLogger.error(reason);
+        if (!reason.isCanceled) {
+          apiLogger.error(reason);
+          saveError(reason);
+        }
         this.setState({ loading: false });
       });
     });
@@ -276,7 +281,10 @@ class Propagate extends Component {
         this.setState({ count: res.data._items[0].connected_users });
       }
     }).catch((reason) => {
-      if (!reason.isCanceled) apiLogger.error(reason);
+      if (!reason.isCanceled) {
+        apiLogger.error(reason);
+        saveError(reason);
+      }
     })
   };
 
