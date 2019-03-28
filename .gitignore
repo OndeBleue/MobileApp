@@ -1,5 +1,6 @@
 node_modules
 dist
+vendors
 yarn-error.log
 *.kate-swp
 *.swp

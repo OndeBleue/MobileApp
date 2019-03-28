@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
@@ -17,7 +18,7 @@ module.exports = {
         use: ["style-loader", "css-loader"]
       },
       {
-        test: /\.(eot|svg|ttf|woff|woff2|png)$/, 
+        test: /\.(eot|svg|ttf|woff|woff2|png|jpeg)$/,
         loader: "file-loader"
       },
     ]
@@ -45,5 +46,9 @@ module.exports = {
       }],
     }),
     new CleanWebpackPlugin(['dist/']),
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('./vendors/manifest.json')
+    })
   ]
 };
