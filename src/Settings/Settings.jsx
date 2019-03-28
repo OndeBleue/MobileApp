@@ -71,9 +71,9 @@ class Settings extends Component {
               storage.disconnect();
               this.props.history.push('/login');
               this.props.alert.success(`Au revoir ${this.state.name}. Vous allez nous manquer !`);
-            } catch (e) {
-              apiLogger.error(e);
-              saveError(e);
+            } catch (error) {
+              apiLogger.error(error);
+              saveError({ from:'delete account', error });
               this.props.alert.error('Impossible de supprimer votre compte');
             }
           }
@@ -98,7 +98,7 @@ class Settings extends Component {
       this.props.alert.success(`Votre nom a été mis à jour !`);
     } catch(error) {
       apiLogger.error(error);
-      saveError(error);
+      saveError({ from:'profile update', error });
       this.props.alert.error(`Impossible de mettre à jour votre nom`);
     }
   };

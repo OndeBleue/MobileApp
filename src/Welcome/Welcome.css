@@ -20,7 +20,13 @@
 }
 
 .welcome p {
-  margin-top: 2em;
+  margin: 1em 1em 0;
+  line-height: 1.3em;
+}
+
+.welcome p strong {
+  color: #dc542f;
+  margin-left: 0.5em;
 }
 
 .welcome .identifier {

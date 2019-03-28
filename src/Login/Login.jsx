@@ -39,7 +39,7 @@ class Login extends Component {
       this.props.history.push('/welcome');
     } catch (error) {
       apiLogger.error(error);
-      saveError(error);
+      saveError({ from:'logon', error });
       this.props.alert.error(`Impossible de créer le compte.`);
     }
   };
@@ -55,7 +55,7 @@ class Login extends Component {
       this.props.history.push('/propagate');
     } catch (error) {
       apiLogger.error(error);
-      saveError(error);
+      saveError({ from:'login', error });
       this.setState({ tries: this.state.tries + 1}, () => {
         if (error.message === 'Network Error' && this.state.tries >= 5) {
           this.props.alert.error(`Trop de tentatives infructueuses, vous pourrez réessayer dans 10 minutes.`);

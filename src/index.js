@@ -30,7 +30,7 @@ if ('serviceWorker' in navigator) {
              .then(registration => uiLogger.info('Registered service worker', registration))
              .catch(error => {
                uiLogger.error('Failed to register service worker', error);
-               saveError(error);
+               saveError({ from:'register service worker', error });
              });
   });
 } else {

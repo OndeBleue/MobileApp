@@ -106,16 +106,16 @@ export default class Location {
   static handleLocationError(error) {
     switch(error.code) {
       case PERMISSION_DENIED:
-        return "Vous devez autoriser la localisation.";
+        return "Vous devez autoriser la localisation. Relancez l'application pour accepter.";
       case POSITION_UNAVAILABLE:
-        return "Votre position n'est pas disponible.";
+        return "Votre position n'est pas disponible. Patientez ou utilisez un autre appareil.";
       case TIMEOUT:
-        return "Impossible d'obtenir votre position dans un délai raisonnable.";
+        return "Impossible d'obtenir votre position dans un délai raisonnable. Patientez ou utilisez un autre appareil.";
       case GEOLOCATION_UNAVAILABLE:
-        return "Votre navigateur ne supporte pas la géo-localisation.";
+        return "Votre navigateur ne supporte pas la géo-localisation. Utilisez un autre navigateur.";
       case UNKNOWN_ERROR:
       default:
-        return "Une erreur inconnue est survenue.";
+        return "Une erreur inconnue est survenue. Relancez l'application.";
     }
   }
 }

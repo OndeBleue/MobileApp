@@ -227,9 +227,9 @@ class Propagate extends Component {
         createLocation(coordinates, position.datetime).then(res => {
           apiLogger.info(res);
           this.updateNearMe();
-        }).catch((e) => {
-          apiLogger.error(e);
-          saveError(e);
+        }).catch((error) => {
+          apiLogger.error(error);
+          saveError({ from:'push position', error });
         })
       }
     }
@@ -265,7 +265,7 @@ class Propagate extends Component {
       }).catch((reason) => {
         if (!reason.isCanceled) {
           apiLogger.error(reason);
-          saveError(reason);
+          saveError({ from:'update near me', reason });
         }
         this.setState({ loading: false });
       });
@@ -283,7 +283,7 @@ class Propagate extends Component {
     }).catch((reason) => {
       if (!reason.isCanceled) {
         apiLogger.error(reason);
-        saveError(reason);
+        saveError({ from:'update connected users', reason });
       }
     })
   };

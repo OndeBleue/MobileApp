@@ -24,7 +24,7 @@ class ErrorBoundary extends Component {
     uiLogger.error(error);
     uiLogger.trace(info.componentStack);
 
-    saveError({ error, info });
+    saveError({ from:'react component', error, info });
   }
 
   handleClickError = () => {
