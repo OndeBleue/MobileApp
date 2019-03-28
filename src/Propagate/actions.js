@@ -47,3 +47,12 @@ export function countConnectedUsers() {
     },
   }));
 }
+
+export function getCurrentUser() {
+  const identifier = storage.identifier;
+  const b64 = btoa(`${identifier}:password`);
+
+  return axios.get(`${API_URL}/users/${identifier}`, {
+    headers: {'Authorization': `Basic ${b64}`},
+  });
+}

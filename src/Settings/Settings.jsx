@@ -36,6 +36,9 @@ class Settings extends Component {
           name: user.name
         });
       }
+    }).catch(()=> {
+      storage.disconnect();
+      this.props.history.push('/login');
     });
   }
 

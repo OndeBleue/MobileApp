@@ -24,7 +24,12 @@ class Login extends Component {
   
   componentDidMount() {
     if (storage.isAuthenticated()) {
-      this.props.history.push('/propagate');
+      const identifier = storage.identifier;
+      login(identifier).then(() => {
+        this.props.history.push('/propagate');
+      }).catch(()=> {
+        storage.disconnect();
+      });
     }
   }
 

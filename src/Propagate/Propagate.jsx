@@ -8,7 +8,7 @@ import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import Storage from '../storage';
 import Memory from '../memory';
-import { createLocation, fetchPositions, countConnectedUsers } from './actions';
+import { getCurrentUser, createLocation, fetchPositions, countConnectedUsers } from './actions';
 import { saveError } from '../ErrorBoundary/actions';
 
 import settings from './settings.png';
@@ -91,10 +91,15 @@ class Propagate extends Component {
   }
 
   componentDidMount() {
-    location.watchLocation();
-    this.updateConnectedUsers();
-    memory.set(POSITION_FINDER, setInterval(this.initMapPosition, FIND_POSITION));
-    memory.set(COUNT_UPDATER, setInterval(this.updateConnectedUsers, REFRESH_COUNT));
+    getCurrentUser().then(() => {
+      location.watchLocation();
+      this.updateConnectedUsers();
+      memory.set(POSITION_FINDER, setInterval(this.initMapPosition, FIND_POSITION));
+      memory.set(COUNT_UPDATER, setInterval(this.updateConnectedUsers, REFRESH_COUNT));
+    }).catch(()=> {
+      storage.disconnect();
+      this.props.history.push('/login');
+    });
   }
 
   componentWillUnmount() {
