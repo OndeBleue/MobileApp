@@ -51,8 +51,8 @@ export default class Location {
 
   watchLocation() {
     if (!navigator.geolocation) {
-      return this.positions.push(Object.assign(new Error("navigator.geolocation is not available"), {
-        name: "PositionError",
+      return this.positions.push(Object.assign(new Error('navigator.geolocation is not available'), {
+        name: 'PositionError',
         code: GEOLOCATION_UNAVAILABLE ,
         datetime: new Date(),
       }));
@@ -60,7 +60,7 @@ export default class Location {
 
     const errorCallback = ({ code, message }) => {
       this.positions.push(Object.assign(new Error(message), {
-        name: "PositionError",
+        name: 'PositionError',
         code,
         datetime: new Date(),
       }));
@@ -112,7 +112,7 @@ export default class Location {
       case TIMEOUT:
         return "Impossible d'obtenir votre position dans un délai raisonnable. Patientez ou utilisez un autre appareil.";
       case GEOLOCATION_UNAVAILABLE:
-        return "Votre navigateur ne supporte pas la géo-localisation. Utilisez un autre navigateur.";
+        return 'Votre navigateur ne supporte pas la géo-localisation. Utilisez un autre navigateur.';
       case UNKNOWN_ERROR:
       default:
         return "Une erreur inconnue est survenue. Relancez l'application.";

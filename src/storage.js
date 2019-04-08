@@ -1,6 +1,6 @@
-const uuidKey = "onde-bleue-app:user-uuid";
-const idKey = "onde-bleue-app:user-identifier";
-const tokenKey = "onde-bleue-app:user-token";
+const uuidKey = 'onde-bleue-app:user-uuid';
+const idKey = 'onde-bleue-app:user-identifier';
+const tokenKey = 'onde-bleue-app:user-token';
 
 // Singleton class, will keep info saved in localStorage and maintain a cache in memory
 export default class Storage {
