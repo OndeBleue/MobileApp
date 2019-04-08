@@ -1,9 +1,8 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { withAlert } from 'react-alert';
-import { createUser, login } from './actions.js';
-import { apiLogger } from "../logger.js";
-import Storage from '../storage.js';
-import { saveError } from '../ErrorBoundary/actions';
+import { createUser, login, saveError } from '../api';
+import { apiLogger } from '../logger';
+import Storage from '../storage';
 
 import logo from './logo.png';
 
@@ -21,7 +20,7 @@ class Login extends Component {
       tries: 0,
     };
   }
-  
+
   componentDidMount() {
     if (storage.isAuthenticated()) {
       const identifier = storage.identifier;
@@ -48,14 +47,14 @@ class Login extends Component {
       this.props.alert.error(`Impossible de créer le compte.`);
     }
   };
-  
+
   handleLogin = async (event) => {
     event.preventDefault();
     try {
       const response = await login(this.state.identifier);
       apiLogger.info(response);
       storage.storeUser(response.data);
-      
+
       this.props.alert.success(`De retour, ${response.data.name} !`);
       this.props.history.push('/propagate');
     } catch (error) {
@@ -70,15 +69,15 @@ class Login extends Component {
       });
     }
   };
-  
+
   handleNameChange = (event) => {
     this.setState({ name: event.target.value });
   };
-  
+
   handleIdentifierChange = (event) => {
     this.setState({ identifier: event.target.value });
   };
-  
+
   render() {
     return(
       <div className="login">

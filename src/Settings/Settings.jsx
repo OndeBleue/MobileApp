@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { withAlert } from 'react-alert';
 import { confirmAlert } from 'react-confirm-alert';
-import { getCurrentUser, updateUser, deleteUser } from './actions';
+import { getCurrentUser, updateUser, deleteUser, saveError } from '../api';
 import Storage from '../storage';
-import { apiLogger } from '../logger.js';
-import { saveError } from '../ErrorBoundary/actions';
+import { apiLogger } from '../logger';
 
 import logo from './logo.png';
 import signOut from './sign-out.png';

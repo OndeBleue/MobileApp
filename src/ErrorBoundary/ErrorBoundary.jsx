@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withAlert } from 'react-alert';
-import { uiLogger } from "../logger.js";
-import { saveError } from './actions';
+import { uiLogger } from '../logger';
+import { saveError } from '../api';
 
 import warning from './warning.png';
 
@@ -24,7 +24,7 @@ class ErrorBoundary extends Component {
     uiLogger.error(error);
     uiLogger.trace(info.componentStack);
 
-    saveError({ from:'react component', error, info });
+    saveError({ from: 'react component', error, info });
   }
 
   handleClickError = () => {

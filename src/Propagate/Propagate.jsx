@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
-import { withAlert } from "react-alert";
+import { withAlert } from 'react-alert';
 import L from 'leaflet'
 import geolib from 'geolib';
 import moment from 'moment';
@@ -8,8 +8,7 @@ import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import Storage from '../storage';
 import Memory from '../memory';
-import { getCurrentUser, createLocation, fetchPositions, countConnectedUsers } from './actions';
-import { saveError } from '../ErrorBoundary/actions';
+import { getCurrentUser, createLocation, fetchPositions, countConnectedUsers, saveError } from '../api';
 
 import settings from './settings.png';
 import me from './me.png';
@@ -39,7 +38,7 @@ export const meIcon = new L.Icon({
 // when the component is mounted first, we will refresh every seconds until a first position is found
 const FIND_POSITION = 1000;
 const POSITION_FINDER = 'POSITION_FINDER'; // setInterval
-const POSITION_FETCHER = 'POSITION_FETCHER'; // API call 
+const POSITION_FETCHER = 'POSITION_FETCHER'; // API call
 // refresh people around the current view, every 61 seconds
 const FIND_NEAR_ME = 61000;
 const NEAR_ME_UPDATER = 'NEAR_ME_UPDATER'; // setInterval
@@ -73,7 +72,7 @@ class Propagate extends Component {
     const zoomLevel = last ? 14 : 5;
 
     const userId = storage.id;
-    
+
     this.state = {
       mapCenter,
       zoomLevel,
