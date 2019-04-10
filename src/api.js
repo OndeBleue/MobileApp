@@ -4,7 +4,38 @@ import { API_URL } from './config';
 import { makeCancelable } from './utils';
 import Storage from './storage';
 
+// We will wait this value (in ms) before calling some endpoint.
+// If any other request of the same type if called meanwhile, the previous is cancelled and the new is called instead.
+const CALL_DELAY = 500;
+
 const storage = new Storage();
+
+// =====     stackable calls     =====
+
+class Stackable {
+  constructor() {
+    this.stack = [];
+    this.timeout = null;
+  }
+  add(call) {
+    this.stack.push(call);
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(this.run, CALL_DELAY);
+  }
+  run() {
+    const last = this.stack.length - 1;
+    const result = this.stack[last]();
+
+    this.timeout = null;
+    this.stack = [];
+
+    return result;
+  }
+}
+
+
 
 // =====     USER     =====
 
@@ -67,6 +98,7 @@ export function saveError(error) {
 
 // =====     LOCATION     =====
 
+// TODO: use Stackable
 export function createLocation(coordinates, datetime) {
   const user = storage.id;
   const token = storage.token;
