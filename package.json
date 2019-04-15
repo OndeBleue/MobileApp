@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "cron-parser": "^2.11.0",
     "geolib": "^2.0.24",
     "leaflet": "^1.4.0",
     "lodash": "^4.17.11",
