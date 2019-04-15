@@ -1,6 +1,6 @@
 .page404 {
   text-align: center;
-  margin-top: 45%;
+  margin-top: calc(50vh - 100px);
 }
 
 .page404 h1 {
