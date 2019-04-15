@@ -1,39 +1,10 @@
 import axios from 'axios';
 import moment from 'moment';
 import { API_URL } from './config';
-import { makeCancelable } from './utils';
+import { makeCancelable, Stackable } from './utils';
 import Storage from './storage';
 
-// We will wait this value (in ms) before calling some endpoint.
-// If any other request of the same type if called meanwhile, the previous is cancelled and the new is called instead.
-const CALL_DELAY = 500;
-
 const storage = new Storage();
-
-// =====     stackable calls     =====
-
-class Stackable {
-  constructor() {
-    this.stack = [];
-    this.timeout = null;
-  }
-  add(call) {
-    this.stack.push(call);
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-    this.timeout = setTimeout(this.run, CALL_DELAY);
-  }
-  run() {
-    const last = this.stack.length - 1;
-    const result = this.stack[last]();
-
-    this.timeout = null;
-    this.stack = [];
-
-    return result;
-  }
-}
 
 
 
@@ -98,45 +69,68 @@ export function saveError(error) {
 
 // =====     LOCATION     =====
 
-// TODO: use Stackable
+const createLocationStack = new Stackable();
+
 export function createLocation(coordinates, datetime) {
   const user = storage.id;
   const token = storage.token;
-  return axios.post(`${API_URL}/locations`, {
-    user,
-    coordinates: {
-      type: 'Point',
-      coordinates: coordinates
-    },
-    datetime: datetime.toUTCString()
-  }, {
-    headers: {
-      'Authorization': `Token ${token}`,
-      'Content-Type': 'application/json',
-    },
+  createLocationStack.add(() =>
+    axios.post(`${API_URL}/locations`, {
+      user,
+      coordinates: {
+        type: 'Point',
+        coordinates: coordinates
+      },
+      datetime: datetime.toUTCString()
+    }, {
+      headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+  );
+  return new Promise((resolve, reject) => {
+    createLocationStack.successCallback = resolve;
+    createLocationStack.failCallback = reject;
   });
 }
+
+const fetchPositionsStack = new Stackable();
 
 export function fetchPositions(coordinates, distance) {
   const startDate = moment().utc().startOf('day').toDate();
   const endDate = moment(startDate).utc().add(1, 'day').toDate();
   const token = storage.token;
-  return makeCancelable(axios.get(`${API_URL}/people-around?aggregate={"$center": [${coordinates}], "$distance": ${distance}, ` +
-    `"$startdate": "${startDate.toUTCString()}", "$enddate": "${endDate.toUTCString()}"}`, {
-    headers: {
-      'Authorization': `Token ${token}`,
-    },
+  fetchPositionsStack.add(() =>
+    axios.get(`${API_URL}/people-around?aggregate={"$center": [${coordinates}], "$distance": ${distance}, ` +
+      `"$startdate": "${startDate.toUTCString()}", "$enddate": "${endDate.toUTCString()}"}`, {
+      headers: {
+        'Authorization': `Token ${token}`,
+      },
+    })
+  );
+  return makeCancelable(new Promise((resolve, reject) => {
+    fetchPositionsStack.successCallback = resolve;
+    fetchPositionsStack.failCallback = reject;
   }));
 }
+
+const countConnectedStack = new Stackable();
 
 export function countConnectedUsers() {
   const startDate = moment().utc().startOf('day').toDate();
   const endDate = moment(startDate).utc().add(1, 'day').toDate();
   const token = storage.token;
-  return makeCancelable(axios.get(`${API_URL}/count?aggregate={"$startdate": "${startDate.toUTCString()}", ` +
-    `"$enddate": "${endDate.toUTCString()}"}`, {
-    headers: {
-      'Authorization': `Token ${token}`,
-    },
+  countConnectedStack.add(() =>
+    axios.get(`${API_URL}/count?aggregate={"$startdate": "${startDate.toUTCString()}", ` +
+      `"$enddate": "${endDate.toUTCString()}"}`, {
+      headers: {
+        'Authorization': `Token ${token}`,
+      },
+    })
+  );
+  return makeCancelable(new Promise((resolve, reject) => {
+    countConnectedStack.successCallback = resolve;
+    countConnectedStack.failCallback = reject;
   }));
 }
