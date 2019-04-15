@@ -8,6 +8,7 @@ import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import Storage from '../storage';
 import Memory from '../memory';
+import { isRunning } from '../schedule';
 import { getCurrentUser, createLocation, fetchPositions, countConnectedUsers, saveError } from '../api';
 
 import settings from './settings.png';
@@ -91,6 +92,9 @@ class Propagate extends Component {
 
   componentDidMount() {
     getCurrentUser().then(() => {
+      if (!isRunning()) {
+        return this.props.history.push('/pending');
+      }
       location.watchLocation();
       this.updateConnectedUsers();
       memory.set(POSITION_FINDER, setInterval(this.initMapPosition, FIND_POSITION));

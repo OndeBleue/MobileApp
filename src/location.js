@@ -66,7 +66,7 @@ export default class Location {
       }));
     };
 
-    // we run geolocation with high accuracy enabled ans disabled
+    // we run geolocation with high accuracy enabled and disabled
     this.highAccuracyWatchId = Location.runWatcher(true, (location) => {
       this.positions.push({
         location,
