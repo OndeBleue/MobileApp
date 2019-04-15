@@ -2,7 +2,7 @@
 
 // We will wait this value (in ms) before calling some endpoint.
 // If any other request of the same type if called meanwhile, the previous is cancelled and the new is called instead.
-const CALL_DELAY = 750;
+const CALL_DELAY = 1000;
 
 
 // =====     stackable api calls     =====
