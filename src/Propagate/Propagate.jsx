@@ -18,6 +18,7 @@ import gpsFixed from './gps_fixed.png';
 import gpsNotFixed from './gps_not_fixed.png';
 import gpsOff from './gps_off.png';
 import loader from './loader.svg';
+import arrow from './arrow.png';
 
 import 'leaflet/dist/leaflet.css';
 import './Propagate.css';
@@ -95,13 +96,13 @@ class Propagate extends Component {
   componentDidMount() {
     getCurrentUser().then(() => {
       if (!isRunning()) {
-        return this.props.history.push('/pending');
+        // return this.props.history.push('/pending');
       }
       location.watchLocation();
       this.updateConnectedUsers();
       memory.set(POSITION_FINDER, setInterval(this.initMapPosition, FIND_POSITION));
       memory.set(COUNT_UPDATER, setInterval(this.updateConnectedUsers, REFRESH_COUNT));
-      memory.set(END_PROPAGATION_TRIGGER, setTimeout(this.endPropagation, previousOccurrenceEnd().diff(moment())));
+      // memory.set(END_PROPAGATION_TRIGGER, setTimeout(this.endPropagation, previousOccurrenceEnd().diff(moment())));
     }).catch(()=> {
       storage.disconnect();
       this.props.history.push('/login');
@@ -307,6 +308,11 @@ class Propagate extends Component {
     this.props.history.push('/pending');
   };
 
+  showTutorial = () => {
+    const params = new URLSearchParams(new URL(window.location).search);
+    return params.has('tutorial') && !this.state.isPropagating;
+  };
+
   renderMarkers() {
     return this.state.people.map(p => {
       const itsMe = (p.user === this.state.userId);
@@ -333,6 +339,12 @@ class Propagate extends Component {
         {!isPropagating && !positionFinder &&
           <div className="buttons-bar">
             <button onClick={this.handleIAmHere}>Je suis là !</button>
+            {this.showTutorial() &&
+              <div className="tutorial">
+                <img src={arrow} alt="arrow" />
+                <span>Cliquez ici pour participer à l'onde bleue</span>
+              </div>
+            }
           </div>
         }
         {loading && <img src={loader} alt="loading" className="loader" />}

@@ -10,7 +10,7 @@ const storage = new Storage();
 
 class Welcome extends Component {
   handleContinue = () => {
-    this.props.history.push('/propagate');
+    this.props.history.push('/propagate?tutorial');
   };
 
   render() {
@@ -20,8 +20,7 @@ class Welcome extends Component {
           <h1>Bienvenue dans l'onde bleue</h1>
           <p>
             Cette application va vous permettre partager votre position avec les autres manifestants.
-            Vous pourrez également voir, sur la carte, où sont les autres et ainsi vous rapprocher de vos voisins.<br/>
-            <strong>Pour que cela fonctionne, vous devez autoriser la géo-localisation sur l'écran suivant.</strong>
+            Vous pourrez également voir, sur la carte, où sont les autres et ainsi vous rapprocher de vos voisins.
           </p>
           <p>
             Votre identifiant est le : <span className="identifier">{storage.identifier}</span>.
