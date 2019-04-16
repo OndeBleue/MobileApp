@@ -136,3 +136,31 @@
     left: 10px;
   }
 }
+
+.propagate .buttons-bar input.manual-location {
+  position: fixed;
+  left: 15%;
+  width: 60%;
+  border-radius: 4px 0 0 4px;
+  border: 1px solid #00938B;
+  padding: 5px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
+}
+
+.propagate .buttons-bar button.manual-location {
+  position: fixed;
+  left: calc(75% + 11px);
+  height: 34px;
+  font-size: 1em;
+  padding: 0 1em;
+  border-radius: 0 4px 4px 0;
+}
+
+.propagate .buttons-bar i.clear-input {
+  position: fixed;
+  left: 73%;
+  font-style: normal;
+  color: gray;
+  padding-top: 2px;
+  cursor: pointer;
+}

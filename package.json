@@ -41,6 +41,7 @@
     "leaflet": "^1.4.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
+    "nominatim-browser": "^2.0.2",
     "prop-types": "^15.6.2",
     "react": "^16.7.0",
     "react-alert": "^4.0.4",

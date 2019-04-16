@@ -4,6 +4,7 @@ import { withAlert } from 'react-alert';
 import L from 'leaflet'
 import geolib from 'geolib';
 import moment from 'moment';
+import * as Nominatim from 'nominatim-browser';
 import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import Storage from '../storage';
@@ -88,6 +89,8 @@ class Propagate extends Component {
       userId,
       loading: false,
       count: 0,
+      address: '',
+      geocodeResults: null,
     };
 
     this.mapRef = React.createRef();
@@ -172,6 +175,30 @@ class Propagate extends Component {
     }
   };
 
+  handleAddressChange = (event) => {
+    event.preventDefault();
+    this.setState({ address: event.target.value });
+  };
+
+  handleManualPositioning = () => {
+    const map = this.mapRef.current;
+    if (map != null) {
+      const bounds = map.leafletElement.getBounds();
+      const viewbox = `${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()},${bounds.getSouth()}`;
+      Nominatim.geocode({
+        q: this.state.address,
+        viewbox,
+        addressdetails: true,
+      }).then((results) => {
+        this.setState({ geocodeResults: results });
+      })
+    }
+  };
+
+  handleClearAddress = () => {
+    this.setState({ address: '' });
+  };
+
   navigateToSettings = () => {
     this.props.history.push('/settings');
   };
@@ -219,7 +246,7 @@ class Propagate extends Component {
       const bounds = map.leafletElement.getBounds();
       return parseInt(geolib.getDistanceSimple(
         { latitude: this.state.mapCenter[0], longitude: this.state.mapCenter[1] },
-        { latitude: bounds._northEast.lat, longitude: bounds._northEast.lng }
+        { latitude: bounds.getNorthEast().lat, longitude: bounds.getNorthEast().lng }
       ) * 1.1, 10);
     }
     return 100;
@@ -313,6 +340,10 @@ class Propagate extends Component {
     return params.has('tutorial') && !this.state.isPropagating;
   };
 
+  isGeolocated = () => {
+    return !!location.last;
+  };
+
   renderMarkers() {
     return this.state.people.map(p => {
       const itsMe = (p.user === this.state.userId);
@@ -329,7 +360,7 @@ class Propagate extends Component {
   }
 
   render() {
-    const { isPropagating, gpsStatus, mapCenter, zoomLevel, positionFinder, loading, count } = this.state;
+    const { isPropagating, gpsStatus, mapCenter, zoomLevel, positionFinder, loading, count, address } = this.state;
     return (
       <div className="propagate">
         <div className="toolbar">
@@ -345,6 +376,13 @@ class Propagate extends Component {
                 <span>Cliquez ici pour participer à l'onde bleue</span>
               </div>
             }
+          </div>
+        }
+        {isPropagating && !this.isGeolocated() &&
+          <div className="buttons-bar">
+            <input type="text" className="manual-location" placeholder="Votre adresse" value={address} onChange={this.handleAddressChange} />
+            <i className="clear-input" onClick={this.handleClearAddress}>x</i>
+            <button className="manual-location" onClick={this.handleManualPositioning}>&#128269;</button>
           </div>
         }
         {loading && <img src={loader} alt="loading" className="loader" />}
