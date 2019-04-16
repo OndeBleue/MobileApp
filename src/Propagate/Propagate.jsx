@@ -8,7 +8,7 @@ import Location from '../location';
 import { uiLogger, apiLogger } from '../logger';
 import Storage from '../storage';
 import Memory from '../memory';
-import { isRunning } from '../schedule';
+import { isRunning, previousOccurrenceEnd } from '../schedule';
 import { getCurrentUser, createLocation, fetchPositions, countConnectedUsers, saveError } from '../api';
 
 import settings from './settings.png';
@@ -52,6 +52,8 @@ const COUNT_UPDATER = 'COUNT_UPDATER'; // setInterval
 const COUNT_FETCHER = 'COUNT_FETCHER'; // API call
 // will persist the current status of the user during the session (is sending position or not)
 const IS_PROPAGATING = 'IS_PROPAGATING';
+// will navigate to the pending screen after the end of the propagation
+const END_PROPAGATION_TRIGGER = 'END_PROPAGATION_TRIGGER';
 
 // GPS statuses
 const GPS_SEARCHING = 'GPS_SEARCHING';
@@ -99,6 +101,7 @@ class Propagate extends Component {
       this.updateConnectedUsers();
       memory.set(POSITION_FINDER, setInterval(this.initMapPosition, FIND_POSITION));
       memory.set(COUNT_UPDATER, setInterval(this.updateConnectedUsers, REFRESH_COUNT));
+      memory.set(END_PROPAGATION_TRIGGER, setTimeout(this.endPropagation, previousOccurrenceEnd().diff(moment())));
     }).catch(()=> {
       storage.disconnect();
       this.props.history.push('/login');
@@ -133,6 +136,10 @@ class Propagate extends Component {
     if (memory.get(COUNT_UPDATER)) {
       clearInterval(memory.get(COUNT_UPDATER));
       memory.remove(COUNT_UPDATER);
+    }
+    if (memory.get(END_PROPAGATION_TRIGGER)) {
+      clearTimeout(memory.get(END_PROPAGATION_TRIGGER));
+      memory.remove(END_PROPAGATION_TRIGGER);
     }
   }
 
@@ -294,6 +301,10 @@ class Propagate extends Component {
         saveError({ from:'update connected users', reason });
       }
     })
+  };
+
+  endPropagation = () => {
+    this.props.history.push('/pending');
   };
 
   renderMarkers() {

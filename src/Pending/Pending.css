@@ -24,7 +24,7 @@
 }
 .pending .remaining {
   text-align: center;
-  margin-top: 20%;
+  margin-top: 20vh;
   color: white;
   font-size: 2em;
 }
@@ -161,3 +161,11 @@
   }
 }
 
+.pending .users-today {
+  text-align: center;
+  color: white;
+  font-size: 1.2em;
+  position: absolute;
+  bottom: 10vh;
+  width: 100%;
+}

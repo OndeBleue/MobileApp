@@ -24,6 +24,10 @@ export function previousOccurrence() {
   }
 }
 
+export function previousOccurrenceEnd() {
+  return moment(previousOccurrence()).add(PROPAGATION_DURATION, 'm');
+}
+
 export function isRunning() {
   const start = moment(previousOccurrence());
   const end = moment(start).add(PROPAGATION_DURATION, 'm');

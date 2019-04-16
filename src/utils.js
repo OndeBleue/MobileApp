@@ -65,3 +65,10 @@ export const makeCancelable = (promise) => {
     },
   };
 };
+
+
+// =====     pretty print number     =====
+// credits to https://stackoverflow.com/a/2901298/1039377
+export function numberFormat(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}

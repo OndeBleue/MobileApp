@@ -2,32 +2,41 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import Countdown from 'react-countdown-now';
 import { isRunning, nextOccurrence, previousOccurrence } from '../schedule';
+import { numberFormat } from '../utils';
 
 import settings from './settings.png';
 
 import './Pending.css';
+import { countConnectedUsers, saveError } from "../api";
+import { apiLogger } from "../logger";
 
 class Pending extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      count: null,
+    };
   }
 
   componentDidMount() {
     if (isRunning()) {
       return this.props.history.push('/propagate');
     }
-  }
 
-  updateRemaining = () => {
-    if (isRunning()) {
-      return this.props.history.push('/propagate');
+    if (moment().isSame(previousOccurrence(), 'day')) {
+      countConnectedUsers().promise.then((res) => {
+        if (Array.isArray(res.data._items) && res.data._items.length > 0) {
+          this.setState({ count: res.data._items[0].connected_users });
+        }
+      }).catch((reason) => {
+        if (!reason.isCanceled) {
+          apiLogger.error(reason);
+          saveError({ from:'connected users today', reason });
+        }
+      })
     }
-
-    const next = nextOccurrence();
-    console.log(previousOccurrence(), next);
-    const delay = moment().diff(next);
-    this.setState({ remaining: moment.duration(delay).humanize() });
-  };
+  }
 
   navigateToSettings = () => {
     this.props.history.push('/settings');
@@ -35,7 +44,8 @@ class Pending extends Component {
 
   countdownRenderer = ({ days, hours, minutes, seconds, completed }) => {
     if (completed) {
-      return this.props.history.push('/propagate');
+      this.props.history.push('/propagate');
+      return null;
     }
     if (days) {
       return <span>{days} jours {hours} heures et {minutes} minutes</span>;
@@ -47,6 +57,10 @@ class Pending extends Component {
       return <span>{minutes} minutes et {seconds} secondes</span>;
     }
     return <span>{seconds} secondes</span>;
+  };
+
+  renderParticipation = () => {
+    return <div className="users-today">Merci pour votre participation. Aujourd'hui, nous étions {numberFormat(this.state.count)} connectés.</div>
   };
 
   render() {
@@ -71,6 +85,7 @@ class Pending extends Component {
           <div className="minute"/>
           <div className="second"/>
         </div>
+        {this.state.count && this.renderParticipation()}
       </div>
     );
   }
