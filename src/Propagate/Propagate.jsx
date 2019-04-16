@@ -99,13 +99,13 @@ class Propagate extends Component {
   componentDidMount() {
     getCurrentUser().then(() => {
       if (!isRunning()) {
-        // return this.props.history.push('/pending');
+        return this.props.history.push('/pending');
       }
       location.watchLocation();
       this.updateConnectedUsers();
       memory.set(POSITION_FINDER, setInterval(this.initMapPosition, FIND_POSITION));
       memory.set(COUNT_UPDATER, setInterval(this.updateConnectedUsers, REFRESH_COUNT));
-      // memory.set(END_PROPAGATION_TRIGGER, setTimeout(this.endPropagation, previousOccurrenceEnd().diff(moment())));
+      memory.set(END_PROPAGATION_TRIGGER, setTimeout(this.endPropagation, previousOccurrenceEnd().diff(moment())));
     }).catch(()=> {
       storage.disconnect();
       this.props.history.push('/login');
