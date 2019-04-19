@@ -26,7 +26,7 @@ if (!window.location.origin) {
 // webpack plugin for service worker generation
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('dist/service-worker.js', { scope: '/' })
+    navigator.serviceWorker.register(`${window.location.origin}/dist/service-worker.js`, { scope: '/' })
              .then(registration => uiLogger.info('Registered service worker', registration))
              .catch(error => {
                uiLogger.error('Failed to register service worker', error);
