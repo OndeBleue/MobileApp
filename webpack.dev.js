@@ -27,7 +27,7 @@ module.exports = merge(common, {
       LOGGING_LEVEL: JSON.stringify('info'),
       API_ROOT: JSON.stringify('http://localhost:5000'),
       PROPAGATION_DATE: JSON.stringify('0 */20 * * * *'),
-      PROPAGATION_DURATION_MN: 10,
+      PROPAGATION_DURATION_MN: 19,
     })
   ]
 });

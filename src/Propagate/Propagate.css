@@ -156,6 +156,10 @@
   border-radius: 0 4px 4px 0;
 }
 
+.propagate .buttons-bar button.manual-location img {
+  margin-top: 4px;
+}
+
 .propagate .buttons-bar i.clear-input {
   position: fixed;
   left: 73%;
@@ -163,4 +167,35 @@
   color: gray;
   padding-top: 2px;
   cursor: pointer;
+}
+
+
+.propagate .buttons-bar ul.search-results {
+  position: fixed;
+  left: 16%;
+  width: 67%;
+  background: white;
+  top: 68px;
+  list-style: none;
+  padding: 0;
+  border: solid #00938B;
+  border-radius: 0 0 5px 5px;
+  border-width: 0 1px 1px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
+  max-height: 50%;
+  overflow-y: scroll;
+}
+
+.propagate .buttons-bar ul.search-results li:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.propagate .buttons-bar ul.search-results li {
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.propagate .buttons-bar ul.search-results li:hover {
+  background-color: #00938B;
+  color: white;
 }

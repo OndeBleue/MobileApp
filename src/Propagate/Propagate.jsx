@@ -20,6 +20,7 @@ import gpsNotFixed from './gps_not_fixed.png';
 import gpsOff from './gps_off.png';
 import loader from './loader.svg';
 import arrow from './arrow.png';
+import search from './search.png';
 
 import 'leaflet/dist/leaflet.css';
 import './Propagate.css';
@@ -90,7 +91,7 @@ class Propagate extends Component {
       loading: false,
       count: 0,
       address: '',
-      geocodeResults: null,
+      locationSearchResults: null,
     };
 
     this.mapRef = React.createRef();
@@ -180,7 +181,9 @@ class Propagate extends Component {
     this.setState({ address: event.target.value });
   };
 
-  handleManualPositioning = () => {
+  handleManualPositioning = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     const map = this.mapRef.current;
     if (map != null) {
       const bounds = map.leafletElement.getBounds();
@@ -190,7 +193,7 @@ class Propagate extends Component {
         viewbox,
         addressdetails: true,
       }).then((results) => {
-        this.setState({ geocodeResults: results });
+        this.setState({ locationSearchResults: results });
       })
     }
   };
@@ -217,6 +220,13 @@ class Propagate extends Component {
     } else {
       this.showGpsStatusMessage();
     }
+  };
+
+  handleLocationSelected = (location) => {
+    return () => {
+      console.log(location);
+      // TODO this.updatePosition()
+    };
   };
 
   showGpsStatusMessage = () => {
@@ -344,6 +354,17 @@ class Propagate extends Component {
     return !!location.last;
   };
 
+  renderLocationSearchResults() {
+    if (!this.state.locationSearchResults) return null;
+    return (
+      <ul className="search-results">
+        {this.state.locationSearchResults.map((loc) => {
+          return <li key={loc.place_id} onClick={this.handleLocationSelected(loc)}>{loc.display_name}</li>
+        })}
+      </ul>
+    );
+  }
+
   renderMarkers() {
     return this.state.people.map(p => {
       const itsMe = (p.user === this.state.userId);
@@ -380,9 +401,16 @@ class Propagate extends Component {
         }
         {isPropagating && !this.isGeolocated() &&
           <div className="buttons-bar">
-            <input type="text" className="manual-location" placeholder="Votre adresse" value={address} onChange={this.handleAddressChange} />
-            <i className="clear-input" onClick={this.handleClearAddress}>x</i>
-            <button className="manual-location" onClick={this.handleManualPositioning}>&#128269;</button>
+            <form onSubmit={this.handleManualPositioning}>
+              <input type="text"
+                     className="manual-location"
+                     placeholder="Votre adresse"
+                     value={address}
+                     onChange={this.handleAddressChange} />
+              <i className="clear-input" onClick={this.handleClearAddress}>x</i>
+              <button type="submit" className="manual-location"><img src={search} alt="&#128269;" /></button>
+              {this.renderLocationSearchResults()}
+            </form>
           </div>
         }
         {loading && <img src={loader} alt="loading" className="loader" />}
