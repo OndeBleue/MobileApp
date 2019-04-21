@@ -24,7 +24,7 @@ module.exports = merge(common, {
       LOGGING_LEVEL: JSON.stringify('error'),
       API_ROOT: JSON.stringify('https://api.ondebleue.fr'),
       PROPAGATION_DATE: JSON.stringify('0 0 19 * * 7'),
-      PROPAGATION_DURATION_MN: 10,
+      PROPAGATION_DURATION_MN: 30,
     }),
     new CopyPlugin([
       { from: '.htaccess' },
