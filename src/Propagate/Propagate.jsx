@@ -224,8 +224,14 @@ class Propagate extends Component {
 
   handleLocationSelected = (location) => {
     return () => {
-      console.log(location);
-      // TODO this.updatePosition()
+      this.updatePosition({
+        location: {
+          coords: { latitude: parseFloat(location.lat), longitude: parseFloat(location.lon) }
+        },
+        datetime: new Date()
+      }, () => {
+        this.setState({ locationSearchResults: null });
+      })
     };
   };
 
@@ -263,7 +269,7 @@ class Propagate extends Component {
   };
 
   initMapPosition = () => {
-    this.updatePosition(() => {
+    this.updatePosition(location.last,() => {
       clearInterval(memory.get(POSITION_FINDER));
       memory.remove(POSITION_FINDER);
       this.updateNearMe();
@@ -272,8 +278,7 @@ class Propagate extends Component {
     });
   };
 
-  pushPosition = () => {
-    const position = location.last;
+  pushPosition = (position = location.last) => {
     if (position) {
       const coordinates = [position.location.coords.latitude, position.location.coords.longitude];
       if (this.state.isPropagating) {
@@ -288,8 +293,7 @@ class Propagate extends Component {
     }
   };
 
-  updatePosition = (callback) => {
-    const position = location.last;
+  updatePosition = (position = location.last, callback) => {
     if (position) {
       const mapCenter = this.state.hasMoved ? this.state.mapCenter : [position.location.coords.latitude, position.location.coords.longitude];
       const zoomLevel = this.state.hasZoomed ? this.state.zoomLevel : 14;
@@ -298,7 +302,7 @@ class Propagate extends Component {
         gpsStatus: this.gpsStatus(position, location.error),
         zoomLevel,
       }, callback);
-      this.pushPosition();
+      this.pushPosition(position);
     }
   };
 
