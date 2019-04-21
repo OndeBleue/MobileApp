@@ -3,6 +3,7 @@ const merge = require('webpack-merge');
 const MinifyPlugin = require("babel-minify-webpack-plugin");
 const CompressionPlugin = require('compression-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
@@ -25,5 +26,8 @@ module.exports = merge(common, {
       PROPAGATION_DATE: JSON.stringify('0 0 19 * * 7'),
       PROPAGATION_DURATION_MN: 10,
     }),
+    new CopyPlugin([
+      { from: '.htaccess' },
+    ]),
   ]
 });
