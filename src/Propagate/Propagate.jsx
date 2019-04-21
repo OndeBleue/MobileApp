@@ -21,6 +21,7 @@ import gpsOff from './gps_off.png';
 import loader from './loader.svg';
 import arrow from './arrow.png';
 import search from './search.png';
+import position from './position.png';
 
 import 'leaflet/dist/leaflet.css';
 import './Propagate.css';
@@ -62,6 +63,7 @@ const END_PROPAGATION_TRIGGER = 'END_PROPAGATION_TRIGGER';
 const GPS_SEARCHING = 'GPS_SEARCHING';
 const GPS_OK = 'GPS_OK';
 const GPS_OFF = 'GPS_OFF';
+const GPS_UNKNOWN = 'GPS_UNKNOWN';
 
 const location = new Location();
 const storage = new Storage();
@@ -82,6 +84,7 @@ class Propagate extends Component {
     this.state = {
       mapCenter,
       zoomLevel,
+      userPosition: last,
       isPropagating: memory.get(IS_PROPAGATING) || false,
       hasZoomed: false,
       hasMoved: false,
@@ -215,6 +218,14 @@ class Propagate extends Component {
         });
       }
     }
+    else if (this.state.gpsStatus === GPS_UNKNOWN) {
+      const position = this.state.userPosition;
+      if (position && position.location && position.location.coords) {
+        this.setState({
+          mapCenter: [position.location.coords.latitude, position.location.coords.longitude]
+        });
+      }
+    }
     else if (this.state.gpsStatus === GPS_SEARCHING) {
       this.props.alert.info('Recherche de la position ...');
     } else {
@@ -247,12 +258,14 @@ class Propagate extends Component {
     if (status === GPS_SEARCHING) return gpsNotFixed;
     if (status === GPS_OK) return gpsFixed;
     if (status === GPS_OFF) return gpsOff;
+    if (status === GPS_UNKNOWN) return position;
   };
 
   gpsStatus = (position, error) => {
     if (!position && !error) return GPS_SEARCHING;
     if (position && !error) return GPS_OK;
     if (!position && error) return GPS_OFF;
+    return GPS_UNKNOWN;
   };
 
 
@@ -300,6 +313,7 @@ class Propagate extends Component {
       this.setState({
         mapCenter,
         gpsStatus: this.gpsStatus(position, location.error),
+        userPosition: position,
         zoomLevel,
       }, callback);
       this.pushPosition(position);
